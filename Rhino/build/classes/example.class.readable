@@ -1,0 +1,206 @@
+Compiled from "example.js"
+public class example extends org.mozilla.javascript.NativeFunction implements org.mozilla.javascript.Script {
+  private int _id;
+
+  public example(org.mozilla.javascript.Scriptable, org.mozilla.javascript.Context, int);
+    Code:
+       0: aload_0       
+       1: invokespecial #12                 // Method org/mozilla/javascript/NativeFunction."<init>":()V
+       4: aload_0       
+       5: iload_3       
+       6: putfield      #14                 // Field _id:I
+       9: aload_0       
+      10: aload_2       
+      11: aload_1       
+      12: invokespecial #18                 // Method _i1:(Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;)V
+      15: return        
+
+  public example();
+    Code:
+       0: aload_0       
+       1: invokespecial #12                 // Method org/mozilla/javascript/NativeFunction."<init>":()V
+       4: aload_0       
+       5: iconst_0      
+       6: putfield      #14                 // Field _id:I
+       9: return        
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: new           #2                  // class example
+       3: dup           
+       4: invokespecial #25                 // Method "<init>":()V
+       7: aload_0       
+       8: invokestatic  #30                 // Method org/mozilla/javascript/optimizer/OptRuntime.main:(Lorg/mozilla/javascript/Script;[Ljava/lang/String;)V
+      11: return        
+
+  public final java.lang.Object exec(org.mozilla.javascript.Context, org.mozilla.javascript.Scriptable);
+    Code:
+       0: aload_0       
+       1: aload_1       
+       2: aload_2       
+       3: dup           
+       4: aconst_null   
+       5: invokevirtual #36                 // Method call:(Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Scriptable;[Ljava/lang/Object;)Ljava/lang/Object;
+       8: areturn       
+
+  public final java.lang.Object call(org.mozilla.javascript.Context, org.mozilla.javascript.Scriptable, org.mozilla.javascript.Scriptable, java.lang.Object[]);
+    Code:
+       0: aload_1       
+       1: invokestatic  #42                 // Method org/mozilla/javascript/ScriptRuntime.hasTopCall:(Lorg/mozilla/javascript/Context;)Z
+       4: ifne          17
+       7: aload_0       
+       8: aload_1       
+       9: aload_2       
+      10: aload_3       
+      11: aload         4
+      13: invokestatic  #46                 // Method org/mozilla/javascript/ScriptRuntime.doTopCall:(Lorg/mozilla/javascript/Callable;Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Scriptable;[Ljava/lang/Object;)Ljava/lang/Object;
+      16: areturn       
+      17: aload_0       
+      18: aload_1       
+      19: aload_2       
+      20: aload_3       
+      21: aload         4
+      23: aload_0       
+      24: getfield      #14                 // Field _id:I
+      27: tableswitch   { // 1 to 1
+                     1: 48
+               default: 44
+          }
+      44: invokestatic  #50                 // Method _c_script_0:(Lexample;Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Scriptable;[Ljava/lang/Object;)Ljava/lang/Object;
+      47: areturn       
+      48: invokestatic  #53                 // Method _c_helloFunction_1:(Lexample;Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Scriptable;[Ljava/lang/Object;)Ljava/lang/Object;
+      51: areturn       
+
+  public int getLanguageVersion();
+    Code:
+       0: iconst_0      
+       1: ireturn       
+
+  public java.lang.String getFunctionName();
+    Code:
+       0: aload_0       
+       1: getfield      #14                 // Field _id:I
+       4: tableswitch   { // 1 to 1
+                     1: 27
+               default: 24
+          }
+      24: ldc           #59                 // String 
+      26: areturn       
+      27: ldc           #61                 // String helloFunction
+      29: areturn       
+
+  public int getParamCount();
+    Code:
+       0: aload_0       
+       1: getfield      #14                 // Field _id:I
+       4: tableswitch   { // 1 to 1
+                     1: 26
+               default: 24
+          }
+      24: iconst_0      
+      25: ireturn       
+      26: iconst_0      
+      27: ireturn       
+
+  public int getParamAndVarCount();
+    Code:
+       0: aload_0       
+       1: getfield      #14                 // Field _id:I
+       4: tableswitch   { // 1 to 1
+                     1: 26
+               default: 24
+          }
+      24: iconst_1      
+      25: ireturn       
+      26: iconst_0      
+      27: ireturn       
+
+  public java.lang.String getParamOrVarName(int);
+    Code:
+       0: aload_0       
+       1: getfield      #14                 // Field _id:I
+       4: tableswitch   { // 1 to 1
+                     1: 27
+               default: 24
+          }
+      24: ldc           #61                 // String helloFunction
+      26: areturn       
+      27: aconst_null   
+      28: areturn       
+
+  public java.lang.String getEncodedSource();
+    Code:
+       0: ldc           #68                 // String m'\rhelloFunctionWXU)helloRV¤'\rhelloFunctionWXR
+       2: aload_0       
+       3: getfield      #14                 // Field _id:I
+       6: tableswitch   { // 1 to 1
+                     1: 31
+               default: 24
+          }
+      24: iconst_0      
+      25: bipush        54
+      27: invokevirtual #74                 // Method java/lang/String.substring:(II)Ljava/lang/String;
+      30: areturn       
+      31: iconst_1      
+      32: bipush        33
+      34: invokevirtual #74                 // Method java/lang/String.substring:(II)Ljava/lang/String;
+      37: areturn       
+
+  public boolean getParamOrVarConst(int);
+    Code:
+       0: aload_0       
+       1: getfield      #14                 // Field _id:I
+       4: tableswitch   { // 1 to 1
+                     1: 26
+               default: 24
+          }
+      24: iconst_0      
+      25: ireturn       
+      26: iconst_0      
+      27: ireturn       
+
+  private static java.lang.Object _c_script_0(example, org.mozilla.javascript.Context, org.mozilla.javascript.Scriptable, org.mozilla.javascript.Scriptable, java.lang.Object[]);
+    Code:
+       0: aload_0       
+       1: aload_3       
+       2: aload_1       
+       3: aload_2       
+       4: iconst_0      
+       5: invokestatic  #80                 // Method org/mozilla/javascript/ScriptRuntime.initScript:(Lorg/mozilla/javascript/NativeFunction;Lorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;Z)V
+       8: new           #2                  // class example
+      11: dup           
+      12: aload_2       
+      13: aload_1       
+      14: iconst_1      
+      15: invokespecial #82                 // Method "<init>":(Lorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Context;I)V
+      18: iconst_1      
+      19: aload_2       
+      20: aload_1       
+      21: invokestatic  #86                 // Method org/mozilla/javascript/optimizer/OptRuntime.initFunction:(Lorg/mozilla/javascript/NativeFunction;ILorg/mozilla/javascript/Scriptable;Lorg/mozilla/javascript/Context;)V
+      24: getstatic     #94                 // Field org/mozilla/javascript/Undefined.instance:Ljava/lang/Object;
+      27: astore        5
+      29: ldc           #61                 // String helloFunction
+      31: aload_1       
+      32: aload_2       
+      33: invokestatic  #98                 // Method org/mozilla/javascript/optimizer/OptRuntime.callName0:(Ljava/lang/String;Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;)Ljava/lang/Object;
+      36: astore        5
+      38: aload         5
+      40: areturn       
+
+  private static java.lang.Object _c_helloFunction_1(example, org.mozilla.javascript.Context, org.mozilla.javascript.Scriptable, org.mozilla.javascript.Scriptable, java.lang.Object[]);
+    Code:
+       0: aload_0       
+       1: invokeinterface #106,  1          // InterfaceMethod org/mozilla/javascript/Scriptable.getParentScope:()Lorg/mozilla/javascript/Scriptable;
+       6: astore_2      
+       7: ldc           #108                // String hello
+       9: goto          12
+      12: areturn       
+
+  private final void _i1(org.mozilla.javascript.Context, org.mozilla.javascript.Scriptable);
+    Code:
+       0: aload_0       
+       1: aload_1       
+       2: aload_2       
+       3: invokevirtual #111                // Method org/mozilla/javascript/NativeFunction.initScriptFunction:(Lorg/mozilla/javascript/Context;Lorg/mozilla/javascript/Scriptable;)V
+       6: return        
+}
