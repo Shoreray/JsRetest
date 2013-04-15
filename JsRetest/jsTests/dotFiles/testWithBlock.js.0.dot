@@ -1,0 +1,11 @@
+digraph {
+"0" [label="print(x);\n"] 
+"1" [label="y = 3;\n"] 
+"2" [label="x = 2;\n"] 
+"3" [label="with (a) "] 
+"4" [label="var a = {x: 1, y: 2};\n"] 
+"1" -> "0" [label=""] 
+"2" -> "1" [label=""] 
+"3" -> "2" [label=""] 
+"4" -> "3" [label=""] 
+}

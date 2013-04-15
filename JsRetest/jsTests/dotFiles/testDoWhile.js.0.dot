@@ -1,0 +1,14 @@
+digraph {
+"0" [label=" while (x < 100) "] 
+"1" [label="s += x;\n"] 
+"2" [label="print(s);\n"] 
+"3" [label="do "] 
+"4" [label="var x = 1;\n"] 
+"5" [label="var s = 0;\n"] 
+"0" -> "2" [label="false"] 
+"0" -> "1" [label="true"] 
+"1" -> "0" [label=""] 
+"3" -> "1" [label=""] 
+"4" -> "5" [label=""] 
+"5" -> "3" [label=""] 
+}

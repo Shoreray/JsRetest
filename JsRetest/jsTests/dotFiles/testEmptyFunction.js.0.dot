@@ -1,0 +1,7 @@
+digraph {
+"0" [label="FunctionDef"] 
+"1" [label="print(\"i\");\n"] 
+"2" [label="emptyFunc();\n"] 
+"0" -> "1" [label=""] 
+"2" -> "0" [label=""] 
+}
