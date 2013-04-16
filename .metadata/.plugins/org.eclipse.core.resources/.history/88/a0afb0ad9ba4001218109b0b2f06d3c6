@@ -1,0 +1,9 @@
+package edu.gatech.aristotle.jsretest.cfg;
+import org.mozilla.javascript.ast.*;
+
+public class JsSourceNode {
+	
+	private AstNode astNode;
+	
+
+}

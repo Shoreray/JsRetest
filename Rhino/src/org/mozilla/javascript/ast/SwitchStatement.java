@@ -173,6 +173,7 @@ public class SwitchStatement extends Jump {
     	sb.append("switch (");
         sb.append(expression.toSource(0));
         sb.append(")");
+        /*
         sb.append(" {");
         for(SwitchCase sc:cases){
         	AstNode caseExpression=sc.getExpression();
@@ -184,6 +185,7 @@ public class SwitchStatement extends Jump {
         	sb.append(", ");
         }
         sb.append("}");
+        */
         return sb.toString();
     }
 

@@ -1,4 +1,4 @@
-var x=1;
+function hi(){var x=1;
 var y=2;
 if(x>0){
 	y+=1;
@@ -6,5 +6,7 @@ if(x>0){
 }else{
 	y+=3;
 }
+doSomething();
 return y;
-
+}
+hi();

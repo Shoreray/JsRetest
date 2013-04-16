@@ -1,0 +1,7 @@
+digraph {
+"0" [label="hi();\n"] 
+"1" [label="exit"] 
+"2" [label="function hi() \n"] 
+"0" -> "1" [label=""] 
+"2" -> "0" [label=""] 
+}

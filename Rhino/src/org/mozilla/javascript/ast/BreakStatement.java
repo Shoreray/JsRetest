@@ -82,10 +82,12 @@ public class BreakStatement extends Jump {
         StringBuilder sb = new StringBuilder();
         sb.append(makeIndent(depth));
         sb.append("break");
+        /*
         if (breakLabel != null) {
             sb.append(" ");
             sb.append(breakLabel.toSource(0));
         }
+        */
         sb.append(";\n");
         return sb.toString();
     }

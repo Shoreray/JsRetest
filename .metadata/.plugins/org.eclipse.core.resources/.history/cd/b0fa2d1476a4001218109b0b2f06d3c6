@@ -1,0 +1,178 @@
+package edu.gatech.aristotle.jsretest.cfg;
+
+import java.util.*;
+
+//Note that this class is not thread safe.
+public class ControlFlowGraph<T>{
+	
+	private HashSet<T> nodes;
+	private HashMap<T,ArrayList<ControlFlowEdge<T> > > outgoingEdges;
+	//Would a map of incomingEdges be useful?
+	private HashMap<T,ArrayList<ControlFlowEdge<T> > > incomingEdges;
+	
+	public ControlFlowGraph(){
+		nodes=new HashSet<T>();
+		outgoingEdges=new HashMap<T,ArrayList<ControlFlowEdge<T> > >();
+	}
+	
+	public boolean containNode(T node){
+		return nodes.contains(node);
+	}
+	
+	public void addNode(T node){
+		if(node == null){
+			throw new IllegalArgumentException("Node cannot be null");
+		}
+		if(!containNode(node)){
+			nodes.add(node);
+			outgoingEdges.put(node, new ArrayList<ControlFlowEdge<T> >());
+			incomingEdges.put(node, new ArrayList<ControlFlowEdge<T> >());
+		}
+	}
+	
+	public boolean removeNode(T node){
+		return nodes.remove(node) && (outgoingEdges.remove(node)!=null) && (incomingEdges.remove(node)!=null);
+	}
+	
+	public boolean haveDecendents(T node){
+		
+		return getOutgoingEdges(node).size()>0;
+	}
+	
+	public boolean havePredecessors(T destNode){
+		
+		return getIncomingEdges(destNode).size()>0;
+	}
+	
+	public HashMap<String,T> getDecendents(T node){
+		
+		ArrayList<ControlFlowEdge<T> > edgesOfNode=getOutgoingEdges(node);
+		HashMap<String,T> decendents=new HashMap<String,T>();
+		for(ControlFlowEdge<T> edge:edgesOfNode){
+			if(decendents.containsKey(edge.getLabel())){
+				//Should never happen.
+				throw new RuntimeException("Internal error: Multiple outgoing control flow edges have the same label");
+			}
+			decendents.put(edge.getLabel(), edge.getDestination());
+		}
+		
+		return decendents;
+	}
+	
+	public T getDecendent(T node,String label){
+		ControlFlowEdge<T> edge=getEdge(node,label);
+		if(edge==null){
+			return null;
+		}
+		return edge.getDestination();
+	}
+	
+	public type getPredecessors(T destNode){
+		return something;
+	}
+	
+	/*public String getEdgeLabel(T sourceNode,T destNode){
+		ControlFlowEdge<T> edge=getEdge(sourceNode,destNode);
+		if(edge == null){
+			//No such edge
+			return null;
+		}else{
+			return edge.getLabel();
+		}
+		
+	}*/
+	
+	public boolean containEdge(T sourceNode,T destNode,String label){
+		T decendent=getDecendent(sourceNode,label);
+		if(!containNode(destNode)){
+			throw new IllegalArgumentException("Destination node is not in the graph.");
+		}
+		return decendent == destNode;
+	}
+	
+	public void addEdge(T sourceNode,T destNode){
+		addEdge(sourceNode,destNode,"");
+	}
+	
+	
+	public void addEdge(T sourceNode,T destNode,String label){
+		if(label == null){
+			label="";
+		}
+		
+		if(containEdge(sourceNode,destNode,label)){
+		
+			throw new IllegalStateException("The specified edge already exists.");
+		}
+		//By calling getEdgeLabel, we have ensured that both the nodes exist in the graph.
+		ControlFlowEdge<T> newEdge=new ControlFlowEdge<T>(sourceNode,destNode,label);
+		outgoingEdges.get(sourceNode).add(newEdge);
+		incomingEdges.get(destNode).add(newEdge);
+		
+		
+	}
+	
+	public boolean removeEdge(T sourceNode,String label){
+		ArrayList<ControlFlowEdge<T> > edgesOfNode=getOutgoingEdges(sourceNode);
+		ControlFlowEdge<T> edge=getEdge(sourceNode,label);
+		
+		if(edge == null){
+			return false;
+		}else{
+			ArrayList<ControlFlowEdge<T> > incomingEdgesRecord=getIncomingEdges(edge.getDestination());
+			
+			edgesOfNode.remove(edge);
+			incomingEdgesRecord.remove(edge);
+			return true;
+		}
+	}
+	
+	
+	
+	private ArrayList<ControlFlowEdge<T> > getOutgoingEdges(T node){
+		if(!containNode(node)){
+			throw new IllegalArgumentException("Source node is not in the graph.");
+		}
+		return outgoingEdges.get(node);
+	}
+	
+	private ArrayList<ControlFlowEdge<T> > getIncomingEdges(T destNode){
+		if(!containNode(destNode)){
+			throw new IllegalArgumentException("Destination node is not in the graph.");
+		}
+		return incomingEdges.get(destNode);
+	}
+	
+	private ControlFlowEdge<T> getEdge(T sourceNode,String label){
+		ArrayList<ControlFlowEdge<T> > edgesOfNode=getOutgoingEdges(sourceNode);
+		for(ControlFlowEdge<T> e:edgesOfNode){
+			if(e.getLabel().equals(label)){
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	/*
+	 * Incorrect implementation: There could be multiple edges with different labels between
+	 * the same pair of nodes.
+	 * private ControlFlowEdge<T> getEdge(T sourceNode,T destNode){
+		if(!containNode(destNode)){
+			throw new IllegalArgumentException("Destination node is not in the graph.");
+		}
+		ArrayList<ControlFlowEdge<T> > edgesOfSourceNode=null;
+		try{
+			edgesOfSourceNode=getOutgoingEdges(sourceNode);
+		}catch(IllegalArgumentException ex){
+			throw new IllegalArgumentException("Source node is not in the graph.");
+		}
+		for(ControlFlowEdge<T> edge:edgesOfSourceNode){
+			if(edge.getDestination() == destNode){
+				return edge;
+			}
+		}
+		//Returning null here means the edge does not exist in the graph
+		return null;
+	}*/
+	
+}

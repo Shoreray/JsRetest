@@ -1,0 +1,51 @@
+package edu.gatech.aristotle.jsretest.cfg;
+
+import org.mozilla.javascript.ast.NodeVisitor;
+
+/**
+ * Don't call any methods other than those explicitly defined in this class.
+ * 
+ * @author Shoreray
+ *
+ */
+class FakeAstNode extends org.mozilla.javascript.ast.AstNode{
+	
+	private String source;
+	private int lineno;
+	
+	public FakeAstNode(String source,int lineno){
+		this.source=source;
+		this.lineno=lineno;
+	}
+
+	@Override
+	public String toSource(int depth) {
+		
+		return source;
+	}
+	
+	public int getLineno(){
+		return lineno;
+	}
+	
+	public boolean isSingleStatement(){
+		return true;
+	}
+	
+	public boolean isStructuralNode(){
+		return false;
+	}
+	
+	public boolean isJumpStatement(){
+		return false;
+	}
+
+	@Override
+	public void visit(NodeVisitor visitor) {
+		visitor.visit(this);
+		
+	}
+	
+	
+
+}

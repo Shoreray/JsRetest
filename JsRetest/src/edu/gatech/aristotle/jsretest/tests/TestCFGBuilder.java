@@ -13,7 +13,7 @@ public class TestCFGBuilder {
 
 	@Test
 	public void test() throws IOException {
-		
+		boolean pass=true;
 		File testsDir=new File("jsTests");
 		File pdfFileDir=new File("jsTests\\pdfFiles");
 		for(File pdfFile:pdfFileDir.listFiles()){
@@ -36,10 +36,11 @@ public class TestCFGBuilder {
 				}
 			}catch(Exception e){
 				e.printStackTrace();
+				pass=false;
 			}
 		}
 		
-		
+		assertTrue(pass);
 	}
 
 }

@@ -1,7 +1,9 @@
 digraph {
-"0" [label="FunctionDef"] 
-"1" [label="print(\"i\");\n"] 
-"2" [label="emptyFunc();\n"] 
-"0" -> "1" [label=""] 
-"2" -> "0" [label=""] 
+"0" [label="emptyFunc();\n"] 
+"1" [label="exit"] 
+"2" [label="print(\"i\");\n"] 
+"3" [label="function emptyFunc() \n"] 
+"0" -> "3" [label=""] 
+"2" -> "1" [label=""] 
+"3" -> "2" [label=""] 
 }

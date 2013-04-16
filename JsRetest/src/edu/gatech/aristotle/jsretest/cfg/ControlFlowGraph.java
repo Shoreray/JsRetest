@@ -14,6 +14,7 @@ public class ControlFlowGraph<T>{
 	private HashMap<T,ArrayList<ControlFlowEdge<T> > > incomingEdges;
 	
 	private T entryNode;
+	private T exitNode;
 	
 	public ControlFlowGraph(){
 		nodes=new HashSet<T>();
@@ -30,6 +31,20 @@ public class ControlFlowGraph<T>{
 	
 	public T getEntryNode(){
 		return entryNode;
+	}
+	
+	public void setExitNode(T exit){
+		if(!containNode(exit)){
+			addNode(exit);
+		}
+		if(_getOutgoingEdges(exit).size()>0){
+			throw new IllegalArgumentException("A node that has outgoing edges cannot be the exit node.");
+		}
+		exitNode=exit;
+	}
+	
+	public T getExitNode(){
+		return exitNode;
 	}
 	
 	public boolean containNode(T node){

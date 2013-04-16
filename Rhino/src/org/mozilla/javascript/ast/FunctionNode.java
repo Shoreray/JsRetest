@@ -367,9 +367,7 @@ public class FunctionNode extends ScriptNode {
 
     @Override
     public String toSource(int depth) {
-    	return "FunctionDef";
-    	/*
-        StringBuilder sb = new StringBuilder();
+    	StringBuilder sb = new StringBuilder();
         sb.append(makeIndent(depth));
         sb.append("function");
         if (functionName != null) {
@@ -383,6 +381,8 @@ public class FunctionNode extends ScriptNode {
             printList(params, sb);
             sb.append(") ");
         }
+    	/*
+        
         if (isExpressionClosure) {
             AstNode body = getBody();
             if (body.getLastChild() instanceof ReturnStatement) {
@@ -400,11 +400,13 @@ public class FunctionNode extends ScriptNode {
         } else {
             sb.append(getBody().toSource(depth).trim());
         }
+        
+        
+        */
         if (functionType == FUNCTION_STATEMENT) {
             sb.append("\n");
         }
-        return sb.toString();
-        */
+    	return sb.toString();
     }
 
     /**

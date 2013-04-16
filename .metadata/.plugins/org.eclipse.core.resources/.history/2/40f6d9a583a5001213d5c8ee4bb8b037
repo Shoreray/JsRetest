@@ -1,0 +1,25 @@
+package edu.gatech.aristotle.jsretest.tests;
+
+import static org.junit.Assert.*;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.junit.Test;
+
+import edu.gatech.aristotle.jsretest.*;
+import edu.gatech.aristotle.jsretest.cfg.*;
+
+public class TestCFGBuilder {
+
+	@Test
+	public void testSimpleJs() throws IOException {
+		CFGBuilder builder=new CFGBuilder("jsTests\\simple.js","simple.js");
+		for(String cfgId:builder.getCFGs().keySet()){
+			ControlFlowGraph<JsSourceNode> cfg=builder.getCFGs().get(cfgId);
+			cfg.dotify("jsTests\\dotFiles\\simple."+cfgId+".dot");
+			Runtime.getRuntime().exec("dot -Tpdf jsTests\\dotFiles\\simple."+cfgId+".dot -o jsTests\\pdfFiles\\simple."+cfgId+".pdf");
+		}
+	}
+
+}

@@ -108,9 +108,20 @@ public class CFGBuilder {
 		
 		private void build(){
 			cfg=new ControlFlowGraph<JsSourceNode>();
+			
 			JsSourceNode sourceNode=jsNodeManager.getJsSourceNode(functionRoot);
 			cfg.addNode(sourceNode);
 			cfg.setEntryNode(sourceNode);
+			
+			//Add a fake node to represent the exit of the function
+			//We must add the fake node. Otherwise, some control flow information will be lost.
+			//e.g. the last statement of the function is the loop condition.
+			FakeAstNode exitAstNode=new FakeAstNode("exit",-1);
+			JsSourceNode exitSourceNode=jsNodeManager.getJsSourceNode(exitAstNode);
+			cfg.addNode(exitSourceNode);
+			cfg.addEdge(sourceNode, exitSourceNode);
+			cfg.setExitNode(exitSourceNode);
+			
 			expandControlFlowNode(sourceNode);
 		}
 		
@@ -220,7 +231,16 @@ public class CFGBuilder {
 			switch(astNode.getType()){
 			case Token.BREAK:
 				BreakStatement breakStmt=(BreakStatement)astNode;
-				jumpTarget=breakStmt.getBreakTarget();
+				jumpTarget=breakStmt.getBreakTarget();//.getNext()
+				//The break target could be either the innermost structural node or a label.
+				//In case of label, we need to use its parent, the LabeledStatement object.
+				if(jumpTarget.getType()==Token.LABEL){
+					jumpTarget=jumpTarget.getParent();
+					if(!(jumpTarget instanceof LabeledStatement)){
+						throw new RuntimeException("Unexpected jump target of break statement.");
+					}
+				}
+				jumpTarget=(AstNode)jumpTarget.getNext();
 				break;
 			case Token.CONTINUE:
 				ContinueStatement continueStmt=(ContinueStatement)astNode;
@@ -234,7 +254,7 @@ public class CFGBuilder {
 				}
 				break;
 			case Token.RETURN:
-				jumpTarget=null;
+				jumpTarget=cfg.getExitNode().getAstNode();
 				break;
 			default:
 				throw new RuntimeException("Unexpeted jump statement type.");
@@ -316,6 +336,17 @@ public class CFGBuilder {
 			List<SwitchCase> cases=switchNode.getCases();
 			boolean existsDefaultCase=false;
 			
+			StringBuilder buffer=new StringBuilder("default-(");
+			for(SwitchCase oneCase:cases){
+				AstNode expression=oneCase.getExpression();
+				if(expression!=null){
+					buffer.append(expression.toSource(0));
+					buffer.append(":");
+				}
+			}
+			buffer.append(")");
+			String defaultLabel=buffer.toString();
+			
 			JsSourceNode decendent=cfg.getDecendent(node, "");
 			if(decendent!=null){
 				cfg.removeEdge(node, "");
@@ -328,7 +359,7 @@ public class CFGBuilder {
 				if(expression!=null){
 					caseString=expression.toSource(0);
 				}else{
-					caseString="default";
+					caseString=defaultLabel;
 					existsDefaultCase=true;
 				}
 				JsSourceNode caseSourceNode=jsNodeManager.getJsSourceNode(oneCase);
@@ -344,7 +375,7 @@ public class CFGBuilder {
 			if(decendent!=null){
 				cfg.addEdge(prevCaseSourceNode, decendent, "");
 				if(!existsDefaultCase){
-					cfg.addEdge(node, decendent, "default");
+					cfg.addEdge(node, decendent, defaultLabel);
 				}
 			}
 			
@@ -416,7 +447,7 @@ public class CFGBuilder {
 				}
 				
 				if(prevCatch==null){
-					cfg.addEdge(tryBlockSourceNode, catchSourceNode, "exception");
+					cfg.addEdge(node, catchSourceNode, "exception");
 				}else{
 					cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), jsNodeManager.getJsSourceNode(currCatch), "false");
 				}
@@ -427,7 +458,7 @@ public class CFGBuilder {
 			
 			if(prevCatch!=null){
 				if(finallySourceNode!=null){
-					cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), finallySourceNode);
+					cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), finallySourceNode,prevCatch.getCatchCondition()==null?"":"false");
 				}else{
 					if(decendent!=null){
 						cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), decendent,prevCatch.getCatchCondition()==null?"":"false");
@@ -667,9 +698,11 @@ public class CFGBuilder {
 			}
 			
 			if(cappedBody==null){
-				//Should not happen.
-				throw new RuntimeException("Internal error: Capped block with no body.");
+				//The body is empty. Do nothing
+				return;
 			}
+			
+			//Else, insert the capped body to the flow
 			
 			JsSourceNode decendent=cfg.getDecendent(node, "");
 			if(decendent!=null){
@@ -711,8 +744,11 @@ public class CFGBuilder {
 				return false;
 			}
 			if(!node.hasChildren()){
-				System.err.println("Warning: Node information not collected!");
-				System.err.println(node.debugPrint());
+				//We already know of these two types and the reason why they will definitely be here.
+				if(!(node instanceof LabeledStatement || node instanceof Label)){
+					System.err.println("Warning: Node information not collected!");
+					System.err.println(node.debugPrint());
+				}
 			}
 			return true;
 		}

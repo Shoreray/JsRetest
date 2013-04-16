@@ -1,0 +1,7 @@
+1365812423193	Rename type 'CfgNode'
+1365815659960	Rename type 'Graph'
+1365815676772	Rename type 'Edge'
+1365819085428	Delete element
+1365884442433	Rename method 'getIncomingEdges'
+1365884455725	Rename method 'getOutgoingEdges'
+1365884466623	Rename method 'getEdge'

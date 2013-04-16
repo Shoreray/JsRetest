@@ -1,0 +1,5 @@
+1365964060546	Rename method 'addFunctionDefinitionNode'
+1365973654339	Rename local variable 'astNode'
+1365974849708	Rename method 'expandSwitchStructure'
+1365982497100	Rename method 'expandCappedMultiBlockStructure'
+1365987176288	Rename local variable 'switchCase'

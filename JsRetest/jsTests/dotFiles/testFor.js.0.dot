@@ -1,0 +1,12 @@
+digraph {
+"0" [label="exit"] 
+"1" [label="print(x);\n"] 
+"2" [label="print(x);\n"] 
+"3" [label="for (var x = 1; x < 100; i++) "] 
+"4" [label="var x = 1;\n"] 
+"1" -> "0" [label=""] 
+"2" -> "3" [label=""] 
+"3" -> "1" [label="false"] 
+"3" -> "2" [label="true"] 
+"4" -> "3" [label=""] 
+}

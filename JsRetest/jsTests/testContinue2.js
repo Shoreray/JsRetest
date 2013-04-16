@@ -17,7 +17,7 @@ do{
 	var y=1;
 	while(y<100){
 		if(x == 50 && y==50)
-			continue outer;
+			continue outer2;
 		z+=x*y;
 	}
 }while(x<100);
