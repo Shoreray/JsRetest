@@ -199,6 +199,12 @@ public class ControlFlowGraph<T>{
 			buffer.append("\"");
 			buffer.append(index++);
 			buffer.append("\" [label=\"");
+			if(node instanceof JsSourceNode){
+				JsSourceNode jsNode=(JsSourceNode)node;
+				buffer.append("[");
+				buffer.append(jsNode.getLineno());
+				buffer.append("]: ");
+			}
 			buffer.append(node.toString().replaceAll("\n", Matcher.quoteReplacement("\\n")).replaceAll("\"", Matcher.quoteReplacement("\\\"")));
 			buffer.append("\"] \n");
 			//

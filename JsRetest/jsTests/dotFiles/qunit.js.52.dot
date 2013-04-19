@@ -1,0 +1,10 @@
+digraph {
+"0" [label="[1375]: elem.className += (elem.className ? \" \" : \"\") + name;\n"] 
+"1" [label="[1374]: if (!hasClass(elem, name)) "] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"0" -> "2" [label=""] 
+"1" -> "0" [label="true"] 
+"1" -> "2" [label="false"] 
+"3" -> "1" [label=""] 
+}

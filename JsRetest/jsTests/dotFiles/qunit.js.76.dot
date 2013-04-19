@@ -1,0 +1,17 @@
+digraph {
+"0" [label="[1423]: return callbacks[prop].apply(callbacks, args);\n"] 
+"1" [label="[1421]: if (prop) "] 
+"2" [label="[1420]: var prop = QUnit.objectType(o);\n"] 
+"3" [label="[1425]: return callbacks[prop];\n"] 
+"4" [label="[1422]: if (QUnit.objectType(callbacks[prop]) === \"function\") "] 
+"5" [label="[-1]: exit"] 
+"6" [label="[0]: entry"] 
+"0" -> "5" [label=""] 
+"1" -> "4" [label="true"] 
+"1" -> "5" [label="false"] 
+"2" -> "1" [label=""] 
+"3" -> "5" [label=""] 
+"4" -> "0" [label="true"] 
+"4" -> "3" [label="false"] 
+"6" -> "2" [label=""] 
+}

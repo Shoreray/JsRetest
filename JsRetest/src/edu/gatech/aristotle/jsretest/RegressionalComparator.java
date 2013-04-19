@@ -4,6 +4,7 @@ import java.util.*;
 import org.mozilla.javascript.*;
 
 import edu.gatech.aristotle.jsretest.cfg.*;
+import edu.gatech.aristotle.jsretest.coverage.*;
 
 public class RegressionalComparator {
 	
@@ -17,7 +18,7 @@ public class RegressionalComparator {
 	// to this one. But I'm not very sure about this. Subject to discussion.
 	private HashSet<ControlFlowEdge<JsSourceNode> > visitedEdges=new HashSet<ControlFlowEdge<JsSourceNode> >();
 	
-	private ArrayList<EdgeIdentifier> dangerousEdgeIdentifiers=new ArrayList<EdgeIdentifier>();
+	private ArrayList<Edge> dangerousEdgeIdentifiers=new ArrayList<Edge>();
 	
 	public RegressionalComparator(CFGBuilder originalProgram,CFGBuilder modifiedProgram){
 		this.origin=originalProgram;
@@ -29,8 +30,8 @@ public class RegressionalComparator {
 		return new ArrayList<ControlFlowEdge<JsSourceNode> >(dangerousEdges);
 	}
 	
-	public ArrayList<EdgeIdentifier> getDangerousEdgeIdentifiers(){
-		return new ArrayList<EdgeIdentifier>(dangerousEdgeIdentifiers);
+	public ArrayList<Edge> getDangerousEdgeIdentifiers(){
+		return new ArrayList<Edge>(dangerousEdgeIdentifiers);
 	}
 	
 	private void compare(){
@@ -69,7 +70,7 @@ public class RegressionalComparator {
 			String label=e.getLabel();
 			JsSourceNode oriNode=e.getDestination();
 			JsSourceNode modNode=modOuts.get(label);
-			if(oriNode.equals(modNode)){
+			if(oriNode.toString().equals(modNode.toString())){
 				ArrayList<String> oriContainedFunctions=oriNode.getFunctionIdentifiers();
 				if(oriContainedFunctions!=null && oriContainedFunctions.size()>0){
 					ArrayList<String> modContainedFunctions=modNode.getFunctionIdentifiers();
@@ -88,13 +89,13 @@ public class RegressionalComparator {
 				dangerousEdges.add(e);
 				
 				if(pOriNode.getAstNode().getType()!=Token.SWITCH){
-					dangerousEdgeIdentifiers.add(new EdgeIdentifier(e.getSource().getLineno(),e.getDestination().getLineno(),e.getLabel()));
+					dangerousEdgeIdentifiers.add(new Edge(this.origin.getSourceURI(),e.getSource().getLineno(),e.getDestination().getLineno(),e.getLabel()));
 					
 				}else{
 					//TODO: Here, verify with coverage data format to see what happens if there is no default
 					//case in the original version of program.
 					String edgeId=""+oriOuts.indexOf(e);
-					dangerousEdgeIdentifiers.add(new EdgeIdentifier(e.getSource().getLineno(),e.getDestination().getLineno(),edgeId));
+					dangerousEdgeIdentifiers.add(new Edge(this.origin.getSourceURI(),e.getSource().getLineno(),e.getDestination().getLineno(),edgeId));
 					
 				}
 				return;

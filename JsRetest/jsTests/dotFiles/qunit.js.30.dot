@@ -1,0 +1,12 @@
+digraph {
+"0" [label="[733]: if (fixture) "] 
+"1" [label="[734]: fixture.innerHTML = config.fixture;\n"] 
+"2" [label="[732]: var fixture = id(\"qunit-fixture\");\n"] 
+"3" [label="[-1]: exit"] 
+"4" [label="[0]: entry"] 
+"0" -> "1" [label="true"] 
+"0" -> "3" [label="false"] 
+"1" -> "3" [label=""] 
+"2" -> "0" [label=""] 
+"4" -> "2" [label=""] 
+}

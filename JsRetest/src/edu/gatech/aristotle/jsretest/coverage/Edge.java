@@ -12,6 +12,13 @@ public class Edge {
 		targetLine = -1;
 		label = "";
 	}
+	
+	public Edge(String scriptName,int sourceLine,int destLine,String label){
+		this.scriptName=scriptName;
+		this.sourceLine=sourceLine;
+		this.targetLine=destLine;
+		this.label=label;
+	}
 
 	public String getScriptName() {
 		return scriptName;
@@ -45,6 +52,8 @@ public class Edge {
 		this.label = label;
 	}
 	
-	
+	public String toString(){
+		return ""+sourceLine+" --> "+targetLine+((label==null || "".equals(label))?"":"  ("+label+")");
+	}
 
 }

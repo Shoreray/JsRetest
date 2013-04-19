@@ -1,5 +1,7 @@
 digraph {
-"0" [label="exit"] 
-"1" [label="let(x = 1, y = 2);\n"] 
-"1" -> "0" [label=""] 
+"0" [label="[-1]: exit"] 
+"1" [label="[0]: entry"] 
+"2" [label="[1]: let(x = 1, y = 2);\n"] 
+"1" -> "2" [label=""] 
+"2" -> "0" [label=""] 
 }

@@ -1,0 +1,9 @@
+digraph {
+"0" [label="[1951]: return function(o, n) ;\n"] 
+"1" [label="[1874]: function diff(o, n) \n"] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"0" -> "2" [label=""] 
+"1" -> "0" [label=""] 
+"3" -> "1" [label=""] 
+}

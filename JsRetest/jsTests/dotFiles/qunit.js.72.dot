@@ -1,0 +1,11 @@
+digraph {
+"0" [label="[1029]: window.location = QUnit.url(params);\n"] 
+"1" [label="[1027]: var params = {};\n"] 
+"2" [label="[1028]: params[event.target.name] = event.target.checked ? true : undefined;\n"] 
+"3" [label="[-1]: exit"] 
+"4" [label="[0]: entry"] 
+"0" -> "3" [label=""] 
+"1" -> "2" [label=""] 
+"2" -> "0" [label=""] 
+"4" -> "1" [label=""] 
+}

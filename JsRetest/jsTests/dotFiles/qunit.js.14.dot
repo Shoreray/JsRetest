@@ -1,0 +1,12 @@
+digraph {
+"0" [label="[359]: return config.current.expected;\n"] 
+"1" [label="[356]: if (arguments.length === 1) "] 
+"2" [label="[357]: config.current.expected = asserts;\n"] 
+"3" [label="[-1]: exit"] 
+"4" [label="[0]: entry"] 
+"0" -> "3" [label=""] 
+"1" -> "2" [label="true"] 
+"1" -> "0" [label="false"] 
+"2" -> "3" [label=""] 
+"4" -> "1" [label=""] 
+}

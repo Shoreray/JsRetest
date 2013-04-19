@@ -1,0 +1,11 @@
+digraph {
+"0" [label="[309]: config.currentModule = name;\n"] 
+"1" [label="[310]: config.currentModuleTestEnvironment = testEnvironment;\n"] 
+"2" [label="[311]: config.modules[name] = true;\n"] 
+"3" [label="[-1]: exit"] 
+"4" [label="[0]: entry"] 
+"0" -> "1" [label=""] 
+"1" -> "2" [label=""] 
+"2" -> "3" [label=""] 
+"4" -> "0" [label=""] 
+}

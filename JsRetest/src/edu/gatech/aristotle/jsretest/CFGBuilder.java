@@ -419,6 +419,8 @@ public class CFGBuilder {
 				cfg.addEdge(tryBlockSourceNode, finallySourceNode);
 				if(decendent!=null){
 					cfg.addEdge(finallySourceNode, decendent);
+					cfg.addEdge(finallySourceNode, cfg.getExitNode(),"return_or_throw");
+					
 				}
 			}else{
 				if(decendent!=null){
@@ -465,10 +467,12 @@ public class CFGBuilder {
 			
 			if(prevCatch!=null){
 				if(finallySourceNode!=null){
-					cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), finallySourceNode,prevCatch.getCatchCondition()==null?"":"false");
+					if(prevCatch.getCatchCondition()!=null){
+						cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), finallySourceNode,"false");
+					}
 				}else{
-					if(decendent!=null){
-						cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), decendent,prevCatch.getCatchCondition()==null?"":"false");
+					if(prevCatch.getCatchCondition()!=null){
+						cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), cfg.getExitNode(),"false");
 						
 					}
 				}

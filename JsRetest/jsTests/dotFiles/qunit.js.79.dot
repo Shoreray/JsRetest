@@ -1,0 +1,14 @@
+digraph {
+"0" [label="[1577]: if (args.length < 2) "] 
+"1" [label="[1576]: var args = [].slice.apply(arguments);\n"] 
+"2" [label="[1578]: return true;\n"] 
+"3" [label="[1581]: return (function(a, b) (args[0], args[1]) && arguments.callee.apply(this, args.splice(1, args.length - 1)));\n"] 
+"4" [label="[-1]: exit"] 
+"5" [label="[0]: entry"] 
+"0" -> "2" [label="true"] 
+"0" -> "3" [label="false"] 
+"1" -> "0" [label=""] 
+"2" -> "4" [label=""] 
+"3" -> "4" [label=""] 
+"5" -> "1" [label=""] 
+}

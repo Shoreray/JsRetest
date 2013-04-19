@@ -1,7 +1,9 @@
 digraph {
-"0" [label="hi();\n"] 
-"1" [label="exit"] 
-"2" [label="function hi() \n"] 
-"0" -> "1" [label=""] 
-"2" -> "0" [label=""] 
+"0" [label="[1]: function hi() \n"] 
+"1" [label="[0]: entry"] 
+"2" [label="[-1]: exit"] 
+"3" [label="[12]: hi();\n"] 
+"0" -> "3" [label=""] 
+"1" -> "0" [label=""] 
+"3" -> "2" [label=""] 
 }

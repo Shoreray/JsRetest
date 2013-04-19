@@ -1,0 +1,9 @@
+digraph {
+"0" [label="[1455]: return {\"string\": useStrictEquality, \"boolean\": useStrictEquality, \"number\": useStrictEquality, \"null\": useStrictEquality, \"undefined\": useStrictEquality, \"nan\": function(b) , \"date\": function(b, a) , \"regexp\": function(b, a) , \"function\": function() , \"array\": function(b, a) , \"object\": function(b, a) };\n"] 
+"1" [label="[1443]: function useStrictEquality(b, a) \n"] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"0" -> "2" [label=""] 
+"1" -> "0" [label=""] 
+"3" -> "1" [label=""] 
+}
