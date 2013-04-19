@@ -1,0 +1,11 @@
+package edu.gatech.aristotle.jsretest;
+
+public class EdgeIdentifier {
+	
+	private int sourceLine;
+	private int destLine;
+	private String label;
+	
+	
+
+}

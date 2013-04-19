@@ -8,6 +8,4 @@
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="edu.gatech.aristotle.jsretest.CFGBuilder"/>
 <fullyQualifiedTypeName name="edu.gatech.aristotle.jsretest.cfg.ControlFlowGraph"/>
-<fullyQualifiedTypeName name="java.util.regex.Matcher"/>
-<fullyQualifiedTypeName name="java.lang.System"/>
 </qualifiedTypeNameHistroy>

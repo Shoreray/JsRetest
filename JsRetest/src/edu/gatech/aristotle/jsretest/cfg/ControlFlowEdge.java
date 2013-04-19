@@ -46,4 +46,8 @@ public class ControlFlowEdge<T>{
 		
 	}
 	
+	public int hashCode(){
+		return source.hashCode()+destination.hashCode()+label.hashCode();
+	}
+	
 }

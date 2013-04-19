@@ -102,6 +102,17 @@ public class ControlFlowGraph<T>{
 		return decendents;
 	}
 	
+	public ArrayList<ControlFlowEdge<T> > getOutgoingEdges(T sourceNode){
+		ArrayList<ControlFlowEdge<T> > edgeList=_getOutgoingEdges(sourceNode);
+		ArrayList<ControlFlowEdge<T> > newEdgeList=new ArrayList<ControlFlowEdge<T> >();
+		
+		for(ControlFlowEdge<T> e:edgeList){
+			newEdgeList.add(new ControlFlowEdge<T>(e));
+		}
+		
+		return newEdgeList;
+	}
+	
 	public T getDecendent(T node,String label){
 		ControlFlowEdge<T> edge=_getEdge(node,label);
 		if(edge==null){

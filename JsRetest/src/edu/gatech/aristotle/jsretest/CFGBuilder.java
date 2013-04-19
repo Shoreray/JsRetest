@@ -109,9 +109,16 @@ public class CFGBuilder {
 		private void build(){
 			cfg=new ControlFlowGraph<JsSourceNode>();
 			
+			//For consistency of the regression selection algorithm, we add this fake node
+			//to represent the entry of functions.
+			FakeAstNode entryAstNode=new FakeAstNode("entry",0);
+			JsSourceNode entrySourceNode=jsNodeManager.getJsSourceNode(entryAstNode);
+			cfg.addNode(entrySourceNode);
+			cfg.setEntryNode(entrySourceNode);
+			
 			JsSourceNode sourceNode=jsNodeManager.getJsSourceNode(functionRoot);
 			cfg.addNode(sourceNode);
-			cfg.setEntryNode(sourceNode);
+			cfg.addEdge(entrySourceNode, sourceNode);
 			
 			//Add a fake node to represent the exit of the function
 			//We must add the fake node. Otherwise, some control flow information will be lost.
@@ -464,6 +471,11 @@ public class CFGBuilder {
 						cfg.addEdge(jsNodeManager.getJsSourceNode(prevCatch), decendent,prevCatch.getCatchCondition()==null?"":"false");
 						
 					}
+				}
+			}else{
+				if(finallySourceNode!=null){
+					//Only try and finally. Add the exception flow from try to finally
+					cfg.addEdge(node, finallySourceNode,"exception");
 				}
 			}
 			

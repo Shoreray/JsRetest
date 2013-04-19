@@ -1,0 +1,34 @@
+package edu.gatech.aristotle.jsretest;
+import java.util.*;
+import edu.gatech.aristotle.jsretest.cfg.*;
+
+public class RegressionalComparator {
+	
+	private CFGBuilder origin;
+	private CFGBuilder modified;
+	private ArrayList<ControlFlowEdge<JsSourceNode> > dangerousEdges=new ArrayList<ControlFlowEdge<JsSourceNode>>();
+	private LinkedList<CFGPair> functionsToCompare=new LinkedList<CFGPair>();
+	//In the 1997 ACM regression selection paper, another approach is employed. I think it is equivalent to this one.
+	//But I'm not very sure about this. Subject to discussion.
+	private HashSet<ControlFlowEdge<JsSourceNode> > visitedEdges=new HashSet<ControlFlowEdge<JsSourceNode> >();
+	
+	
+	public RegressionalComparator(CFGBuilder originalProgram,CFGBuilder modifiedProgram){
+		this.origin=originalProgram;
+		this.modified=modifiedProgram;
+	}
+	
+	
+	
+
+}
+
+class CFGPair{
+	public ControlFlowGraph<JsSourceNode> origin;
+	public ControlFlowGraph<JsSourceNode> modified;
+	
+	public CFGPair(ControlFlowGraph<JsSourceNode> origin,ControlFlowGraph<JsSourceNode> modified){
+		this.origin=origin;
+		this.modified=modified;
+	}
+}

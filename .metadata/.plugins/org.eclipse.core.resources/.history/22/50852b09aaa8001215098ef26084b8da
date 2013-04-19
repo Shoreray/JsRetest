@@ -1,0 +1,110 @@
+package edu.gatech.aristotle.jsretest;
+import java.util.*;
+import edu.gatech.aristotle.jsretest.cfg.*;
+
+public class RegressionalComparator {
+	
+	private CFGBuilder origin;
+	private CFGBuilder modified;
+	private ArrayList<ControlFlowEdge<JsSourceNode> > dangerousEdges=new ArrayList<ControlFlowEdge<JsSourceNode>>();
+	private LinkedList<CFGPair> functionsToCompare=new LinkedList<CFGPair>();
+	private HashSet<CFGPair> functionsCompared=new HashSet<CFGPair>();
+	// In the 1997 ACM regression selection paper, another approach to keep
+	// track of which entities are visited is employed. I think it is equivalent
+	// to this one. But I'm not very sure about this. Subject to discussion.
+	private HashSet<ControlFlowEdge<JsSourceNode> > visitedEdges=new HashSet<ControlFlowEdge<JsSourceNode> >();
+	
+	
+	public RegressionalComparator(CFGBuilder originalProgram,CFGBuilder modifiedProgram){
+		this.origin=originalProgram;
+		this.modified=modifiedProgram;
+		compare();
+	}
+	
+	
+	
+	private void compare(){
+		CFGPair entry=new CFGPair(origin.getEntryFunctionCFG(),modified.getEntryFunctionCFG());
+		functionsToCompare.addLast(entry);
+		while(!functionsToCompare.isEmpty()){
+			CFGPair currentPair=functionsToCompare.removeFirst();
+			compareFunction(currentPair);
+		}
+	}
+
+	private void compareFunction(CFGPair pair) {
+		if(functionsCompared.contains(pair)){
+			return;
+		}
+		functionsCompared.add(pair);
+		ControlFlowGraph<JsSourceNode> origin=pair.origin;
+		ControlFlowGraph<JsSourceNode> modified=pair.modified;
+		//Entry nodes of CFGs are identical fake nodes.
+		compareCFG(origin,origin.getEntryNode(),modified,modified.getEntryNode());
+		
+	}
+
+	private void compareCFG(ControlFlowGraph<JsSourceNode> origin,
+			JsSourceNode pOriNode, ControlFlowGraph<JsSourceNode> modified,
+			JsSourceNode pModNode) {
+		ArrayList<ControlFlowEdge<JsSourceNode> > oriOuts=origin.getOutgoingEdges(pOriNode);
+		HashMap<String,JsSourceNode> modOuts=modified.getDecendents(pModNode);
+		
+		for(ControlFlowEdge<JsSourceNode> e:oriOuts){
+			if(visitedEdges.contains(e)){
+				
+				return;
+			}
+			visitedEdges.add(e);
+			String label=e.getLabel();
+			JsSourceNode oriNode=e.getDestination();
+			JsSourceNode modNode=modOuts.get(label);
+			if(oriNode.equals(modNode)){
+				ArrayList<String> oriContainedFunctions=oriNode.getFunctionIdentifiers();
+				if(oriContainedFunctions!=null && oriContainedFunctions.size()>0){
+					ArrayList<String> modContainedFunctions=modNode.getFunctionIdentifiers();
+					for(int i=0;i<oriContainedFunctions.size();++i){
+						CFGPair functionPair=new CFGPair(this.origin.getFunctionCFG(oriContainedFunctions.get(i)),this.modified.getFunctionCFG(modContainedFunctions.get(i)));
+						//TODO: Here, is it possible for one function in the original program to be matched to multiple 
+						//functions in the modified program?
+						if(!functionsCompared.contains(functionPair)){
+							functionsToCompare.addLast(functionPair);
+						}
+						
+					}
+				}
+				compareCFG(origin,oriNode,modified,modNode);
+			}else{
+				dangerousEdges.add(e);
+				return;
+			}
+		}
+		
+	}
+	
+
+}
+
+class CFGPair{
+	
+	public ControlFlowGraph<JsSourceNode> origin;
+	public ControlFlowGraph<JsSourceNode> modified;
+	
+	public CFGPair(ControlFlowGraph<JsSourceNode> origin,ControlFlowGraph<JsSourceNode> modified){
+		this.origin=origin;
+		this.modified=modified;
+	}
+	
+	public boolean equals(Object o){
+		if(!(o instanceof CFGPair)){
+			return false;
+		}
+		CFGPair p=(CFGPair)o;
+		return origin==p.origin && modified==p.modified;
+	}
+	
+	public int hashCode(){
+		return origin.hashCode()+modified.hashCode();
+	}
+	
+}
