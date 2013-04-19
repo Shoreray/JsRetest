@@ -30,7 +30,7 @@ public class RegressionalComparator {
 	}
 	
 	public ArrayList<EdgeIdentifier> getDangerousEdgeIdentifiers(){
-		return new ArrayList<EdgeIdentifier>(dangerousEdgeIdentifiers);
+		return dangerousEdgeIdentifiers;
 	}
 	
 	private void compare(){

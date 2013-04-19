@@ -1734,3 +1734,25 @@ Command-line arguments:  -data C:\Users\Shoreray\Dropbox\JsRetest -os win32 -ws 
 
 !ENTRY org.eclipse.ui 4 4 2013-04-18 21:07:19.419
 !MESSAGE Unable to find Action Set: adt.actionSet.lint
+
+!ENTRY com.google.gdt.eclipse.platform.shared 2 0 2013-04-19 00:59:48.495
+!MESSAGE org.mortbay.jetty: 1 threads could not be stopped
+!SESSION 2013-04-19 01:06:45.409 -----------------------------------------------
+eclipse.buildId=I20120608-1400
+java.version=1.7.0_07
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.ui 4 4 2013-04-19 01:06:52.893
+!MESSAGE Unable to find Action Set: adt.actionSet.wizards
+
+!ENTRY org.eclipse.ui 4 4 2013-04-19 01:06:52.906
+!MESSAGE Unable to find Action Set: adt.actionSet.refactorings
+
+!ENTRY org.eclipse.ui 4 4 2013-04-19 01:06:52.910
+!MESSAGE Unable to find Action Set: adt.actionSet.avdManager
+
+!ENTRY org.eclipse.ui 4 4 2013-04-19 01:06:52.913
+!MESSAGE Unable to find Action Set: adt.actionSet.lint

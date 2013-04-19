@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.util.HashSet"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.io.Reader"/>
 <fullyQualifiedTypeName name="org.mozilla.javascript.ast.AstNode"/>
 <fullyQualifiedTypeName name="org.mozilla.javascript.ast.SwitchStatement"/>
 <fullyQualifiedTypeName name="java.io.File"/>
-<fullyQualifiedTypeName name="edu.gatech.aristotle.jsretest.CFGBuilder"/>
 <fullyQualifiedTypeName name="edu.gatech.aristotle.jsretest.cfg.ControlFlowGraph"/>
+<fullyQualifiedTypeName name="edu.gatech.aristotle.jsretest.RegressionalComparator"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="edu.gatech.aristotle.jsretest.CFGBuilder"/>
+<fullyQualifiedTypeName name="org.mozilla.javascript.Token"/>
 </qualifiedTypeNameHistroy>
