@@ -15,13 +15,16 @@ public class CoverageData {
     private HashMap<String, HashMap<String, ArrayList<String>>> branchesCoverage;
     
   //script -> 1,1-> test1
-    public static HashMap<String, HashMap<String, ArrayList<String>>> switchCoverage;
+    private HashMap<String, HashMap<String, ArrayList<String>>> switchCoverage;
 
     
     private String reportDir;
     private final String lineCoverageFile = "wholeLineCoverage.dat";
     private final String branchCoverageFile = "wholeBranchCoverage.dat";
     private final String switchCoverageFile = "wholeSwitchCoverage.dat";
+    
+    private static final String TRUE_LABEL = "true";
+    private static final String FALSE_LABEL = "false";
     
     public CoverageData(String reportDir){
     	this.reportDir = reportDir;
@@ -66,7 +69,7 @@ public class CoverageData {
     			// This is a normal edge(straight line in one basic block), need to cover both src and target
     			// Or this is a special exception edge, both source and target should be covered too
     			ts = getCommonTests(linesCoverage.get(edge.getScriptName()).get(edge.getSourceLine()), linesCoverage.get(edge.getScriptName()).get(edge.getTargetLine()));
-    		}else if(edgeLabel.endsWith("T") || edgeLabel.endsWith("F")){
+    		}else if(edgeLabel.endsWith(TRUE_LABEL) || edgeLabel.endsWith(FALSE_LABEL)){
     			// This is a branch edge, need to cover sourceLineT, sourceLineF
     			ts = branchesCoverage.get(edge.getScriptName()).get(edge.getSourceLine() + edgeLabel);
     		}else{
@@ -97,5 +100,35 @@ public class CoverageData {
     	
     	return ts;
     }
+
+	public HashMap<String, HashMap<Integer, ArrayList<String>>> getLinesCoverage() {
+		return linesCoverage;
+	}
+
+	public HashMap<String, HashMap<String, ArrayList<String>>> getBranchesCoverage() {
+		return branchesCoverage;
+	}
+
+	public  HashMap<String, HashMap<String, ArrayList<String>>> getSwitchCoverage() {
+		return switchCoverage;
+	}
+
+	public String getReportDir() {
+		return reportDir;
+	}
+
+	public String getLineCoverageFile() {
+		return lineCoverageFile;
+	}
+
+	public String getBranchCoverageFile() {
+		return branchCoverageFile;
+	}
+
+	public String getSwitchCoverageFile() {
+		return switchCoverageFile;
+	}
+    
+    
 
 }
