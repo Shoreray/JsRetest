@@ -97,7 +97,7 @@ public class RegressionalComparator {
 					
 					//TODO: Here, verify with coverage data format to see what happens if there is no default
 					//case in the original version of program.
-					String edgeId=""+oriOuts.indexOf(e);
+					String edgeId=""+(oriOuts.indexOf(e)+1);
 					dangerousEdgeIdentifiers.add(new Edge(this.origin.getSourceURI(),e.getSource().getLineno(),e.getDestination().getLineno(),edgeId));
 					
 				}
