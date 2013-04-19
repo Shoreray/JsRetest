@@ -352,11 +352,16 @@ public class FileData extends CoverageAdapter {
     private int codeLinesCoveredCount;
     private int branchCount;
     private int branchesCoveredCount;
+    
+    // Added by Jie Lu on 4/18/2013, represent switch coverage
+    private List<List<Integer>> switchData;
+  
 
-    public FileData(String uri, List<Integer> lines, List<List<BranchData>> branchData) {
+    public FileData(String uri, List<Integer> lines, List<List<BranchData>> branchData, List<List<Integer>> switchData) {
         this.uri = uri;
         this.lines = lines;
         this.branchData = branchData;
+        this.switchData = switchData;
     }
 
     public String getUri() {
@@ -423,4 +428,10 @@ public class FileData extends CoverageAdapter {
             }
         }
     }
+
+	public List<List<Integer>> getSwitchData() {
+		return switchData;
+	}
+    
+    
 }

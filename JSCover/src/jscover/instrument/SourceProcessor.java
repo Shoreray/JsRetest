@@ -347,6 +347,9 @@ import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.ast.AstRoot;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 
 import static java.lang.String.format;
@@ -394,6 +397,9 @@ class SourceProcessor {
         String instrumentedSource = instrumentSource(sourceURI, source);
 
         String jsLineInitialization = getJsLineInitialization(uri, instrumenter.getValidLines());
+        // Added by Jie Lu on 4/16/2013, add initialization for switch data
+        jsLineInitialization += getJsSwitchLineInitialization(uri, instrumenter.getSwitchMap());
+        // Update end
         if (includeBranchCoverage)
             jsLineInitialization += branchInstrumentor.getJsLineInitialization();
 
@@ -424,5 +430,33 @@ class SourceProcessor {
         }
         sb.append("}\n");
         return sb.toString();
+    }
+    
+    // Added by Jie Lu on 4/16/2013. Add initialization for switch data
+    protected String getJsSwitchLineInitialization(String fileName, HashMap<Integer, Integer> switchMap){
+    	// Add initialization for switch data
+    	StringBuilder sb = new StringBuilder(format("if (! _$jscoverage['%s'].switchData) {\n", fileName));
+    	sb.append(format("  _$jscoverage['%s'].switchData = [];\n", fileName));
+    	Iterator<Entry<Integer, Integer>> it = switchMap.entrySet().iterator();
+    	while(it.hasNext()){
+    		Entry<Integer, Integer> entry = it.next();
+    		sb.append(format("  _$jscoverage['%s'].switchData[%d] = [];\n", fileName, entry.getValue()));
+    		// Let the switch line number be the first element in the array
+    		sb.append(format("  _$jscoverage['%s'].switchData[%d][0] = %d;\n", fileName, entry.getValue(), entry.getKey()));
+    	}
+    	sb.append("}\n");
+    	
+    	// Add evaluation function for switch case
+    	// Append hashcode of file name to evalSwitchCase function name, so that each script will call its own eval function
+    	sb.append(format("function evalSwitchCase_%s(switchIndex, caseIndex, matchedBefore) {\n", Math.abs(fileName.hashCode())));
+    	sb.append(format("if(!matchedBefore && _$jscoverage['%s'].switchData[switchIndex] != undefined) {\n", fileName));
+    	sb.append(format(" if( _$jscoverage['%s'].switchData[switchIndex].length < caseIndex +1){\n", fileName));
+    	sb.append(format(" _$jscoverage['%s'].switchData[switchIndex][caseIndex] = 1;\n", fileName));
+    	sb.append("}else{\n");
+    	sb.append(format("_$jscoverage['%s'].switchData[switchIndex][caseIndex]++;\n", fileName));
+    	sb.append("}\n");
+    	sb.append("}\n");
+    	sb.append("}\n");
+    	return sb.toString();
     }
 }

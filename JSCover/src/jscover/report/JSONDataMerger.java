@@ -402,6 +402,7 @@ public class JSONDataMerger {
                 NativeObject scriptData = (NativeObject) json.get(scriptURI);
                 NativeArray lineCoverageArray = (NativeArray) scriptData.get("lineData");
                 NativeArray branchJSONArray = (NativeArray) scriptData.get("branchData");
+                NativeArray switchCoverageArray = (NativeArray) scriptData.get("switchData");
                 List<Integer> countData = new ArrayList<Integer>(lineCoverageArray.size());
                 for (int i = 0; i < lineCoverageArray.size(); i++)
                     countData.add((Integer) lineCoverageArray.get(i));
@@ -409,7 +410,17 @@ public class JSONDataMerger {
                 if (branchJSONArray != null) {
                     readBranchLines(branchJSONArray, branchLineArray);
                 }
-                map.put((String) scriptURI, new FileData((String) scriptURI, countData, branchLineArray));
+                List<List<Integer>> switchData = new ArrayList<List<Integer>>();
+                for(int i=0; i<switchCoverageArray.size(); i++){
+                	NativeArray perSwitchData = (NativeArray)switchCoverageArray.get(i);
+                	List<Integer> list = new ArrayList<Integer>();
+                	for(int j=0; j<perSwitchData.size(); j++){
+                		list.add((Integer)perSwitchData.get(j));
+                	}
+                	switchData.add(list);
+                }
+                
+                map.put((String) scriptURI, new FileData((String) scriptURI, countData, branchLineArray, switchData));
             }
         } catch (JsonParser.ParseException e) {
             throw new RuntimeException(e);
@@ -508,7 +519,8 @@ public class JSONDataMerger {
                 lines[script.getLines().get(i)] = 0;
             }
             List<List<BranchData>> branchLineArray = new ArrayList<List<BranchData>>();
-            FileData coverageData = new FileData(script.getUri(), Arrays.asList(lines), branchLineArray);
+            List<List<Integer>> switchArray = new ArrayList<List<Integer>>();
+            FileData coverageData = new FileData(script.getUri(), Arrays.asList(lines), branchLineArray, switchArray);
             map.put(script.getUri(), coverageData);
         }
         return map;

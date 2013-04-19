@@ -346,6 +346,7 @@ import jscover.util.Logger;
 import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.NodeVisitor;
 
+import java.util.HashMap;
 import java.util.SortedSet;
 
 class ParseTreeInstrumenter implements NodeVisitor {
@@ -360,6 +361,14 @@ class ParseTreeInstrumenter implements NodeVisitor {
 
     public SortedSet<Integer> getValidLines() {
         return nodeProcessor.getValidLines();
+    }
+    
+    public HashMap<Integer, Integer> getSwitchMap(){
+    	return nodeProcessor.getSwitchMap();
+    }
+    
+    public HashMap<Integer, Integer> getSwitchCaseMap(){
+    	return nodeProcessor.getSwitchCaseMap();
     }
 
     public boolean visit(AstNode node) {

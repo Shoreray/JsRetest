@@ -10,5 +10,7 @@ public class CoverageData {
     // ArrayList<String> = <t1, t2...>; HashMap<String, ArrayList<String>> = [1T, <t1, t2>..]; HashMap ... = <script, [1T, <t1, t2>]>..
     public static HashMap<String, HashMap<String, ArrayList<String>>> branchesCoverage = new HashMap<String, HashMap<String, ArrayList<String>>>();
     
+    //script -> 1,1-> test1
+    public static HashMap<String, HashMap<String, ArrayList<String>>> switchCoverage = new HashMap<String, HashMap<String, ArrayList<String>>>();
 
 }

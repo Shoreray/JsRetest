@@ -348,13 +348,20 @@ import org.mozilla.javascript.ast.*;
 import java.util.SortedSet;
 
 class StatementBuilder {
-    public ExpressionStatement buildStatementFromString(String statementStr){
-    	org.mozilla.javascript.ast.ExpressionStatement expression = new ExpressionStatement();
-    //	expression.setString("var hello=hello");
-  VariableDeclaration declare = new VariableDeclaration();
-  
-    	return expression;
-    }
+	public ExpressionStatement buildBooleanVarDeclaration(String varName, boolean booleanValue) {
+		Name var = new Name(0, varName);
+		KeywordLiteral value = new KeywordLiteral();
+		if(booleanValue)
+			value.setType(Token.TRUE);
+		else
+			value.setType(Token.FALSE);
+		VariableInitializer init = new VariableInitializer();
+		init.setTarget(var);
+		init.setInitializer(value);
+		VariableDeclaration varDec = new VariableDeclaration();
+		varDec.addVariable(init);
+		return new ExpressionStatement(varDec);
+	}
 	
     public ExpressionStatement buildInstrumentationStatement(int lineNumber, String fileName, SortedSet<Integer> validLines) {
         if (lineNumber < 1)
@@ -381,5 +388,41 @@ class StatementBuilder {
         UnaryExpression unaryExpression = new UnaryExpression(Token.INC, 0, indexLineNumber, postFix);
         
         return new ExpressionStatement(unaryExpression);
+    }
+    
+    public ExpressionStatement buildSwitchCaseEvalFunctionCall(String script, int switchIndex, int caseIndex){
+  
+    	NumberLiteral switchIndexVar = new NumberLiteral();
+    	switchIndexVar.setValue("" + switchIndex);
+    	
+    	NumberLiteral caseIndexVar = new NumberLiteral();
+    	caseIndexVar.setValue("" + caseIndex);
+    	
+    	Name flagVar = new Name();
+    	flagVar.setIdentifier("matchedBefore");
+    	
+    	Name funcName = new Name();
+    	funcName.setIdentifier("evalSwitchCase_" + Math.abs(script.hashCode()));
+    	
+    	FunctionCall funcCall = new FunctionCall();
+    	funcCall.setTarget(funcName);
+    	funcCall.addArgument(switchIndexVar);
+    	funcCall.addArgument(caseIndexVar);
+    	funcCall.addArgument(flagVar);
+    	return new ExpressionStatement(funcCall);
+    	
+    }
+    
+    public ExpressionStatement buildAssignmentFromBoolean(String varName, boolean booleanValue){
+    	Name var = new Name(0, varName);
+		KeywordLiteral value = new KeywordLiteral();
+		if(booleanValue)
+			value.setType(Token.TRUE);
+		else
+			value.setType(Token.FALSE);
+		VariableInitializer init = new VariableInitializer();
+		init.setTarget(var);
+		init.setInitializer(value);
+    	return new ExpressionStatement(init);
     }
 }

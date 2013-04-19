@@ -346,175 +346,254 @@ import org.mozilla.javascript.Token;
 import org.mozilla.javascript.ast.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 class NodeProcessor {
-    private StatementBuilder statementBuilder = new StatementBuilder();
-    private SortedSet<Integer> validLines = new TreeSet<Integer>();
-    private String fileName;
+	private StatementBuilder statementBuilder = new StatementBuilder();
+	private SortedSet<Integer> validLines = new TreeSet<Integer>();
+	private String fileName;
 
-    public NodeProcessor(String uri) {
-        this.fileName = uri;
-    }
+	// Added by Jie Lu on 4/16/2013, to handle switch and case
+	// switch Line number - switch index in the script
+	private HashMap<Integer, Integer> switchMap = new HashMap<Integer, Integer>();
+	// switch case line number = switch case index in each switch clause in the
+	// script
+	private HashMap<Integer, Integer> switchCaseMap = new HashMap<Integer, Integer>();
+	private int switchIndex = 0;
+	// Update end
 
-    public ExpressionStatement buildInstrumentationStatement(int lineNumber) {
-        return statementBuilder.buildInstrumentationStatement(lineNumber, fileName, validLines);
-    }
-    
-    public ExpressionStatement buildStatementFromString(){
-    	return statementBuilder.buildStatementFromString("");
-    }
-    
-    
+	public NodeProcessor(String uri) {
+		this.fileName = uri;
+	}
 
-    boolean processNode(AstNode node) {
-        if (validLines.contains(node.getLineno())) {
-            // Don't add instrumentation if already there
-            return true;
-        }
+	public ExpressionStatement buildInstrumentationStatement(int lineNumber) {
+		return statementBuilder.buildInstrumentationStatement(lineNumber,
+				fileName, validLines);
+	}
 
-        if (node.getParent() != null && node.getLineno() == node.getParent().getLineno()) {
-            // Don't add instrumentation if it will be added by parent for the
-            // same line
-            // TODO Need logic to determine if instrumentation will be added to
-            // parent.
-            // return true;
-        }
+	
 
-        AstNode parent = node.getParent();
-        if (parent instanceof ObjectProperty || parent instanceof FunctionCall) {
-            return true;
-        }
-        if (node instanceof ExpressionStatement || node instanceof EmptyExpression || node instanceof Loop
-                || node instanceof ContinueStatement || node instanceof VariableDeclaration || node instanceof SwitchStatement
-                || node instanceof BreakStatement || node instanceof EmptyStatement || node instanceof ThrowStatement) {
+	boolean processNode(AstNode node) {
+		if (validLines.contains(node.getLineno())) {
+			// Don't add instrumentation if already there
+			// Construct target node
+			
+			
+			return true;
+		}
 
-            if (node.getLineno() < 1) {
-                //Must be a case expression
-                return true;
-            }
-            if(node instanceof SwitchStatement){
-            //	parent.addChildBefore(buildStatementFromString(), node);
-            }
-            if (parent instanceof IfStatement) {
-                IfStatement parentIf = (IfStatement) parent;
-                Scope scope = new Scope();
-                scope.addChild(buildInstrumentationStatement(node.getLineno()));
-                scope.addChild(node);
-                if (parentIf.getThenPart() == node) {
-                    parentIf.setThenPart(scope);
-                } else if (parentIf.getElsePart() == node) {
-                    parentIf.setElsePart(scope);
-                }
-            } else if (parent instanceof Loop) {
-                Loop parentLoop = (Loop) parent;
-                Scope scope = new Scope();
-                scope.addChild(buildInstrumentationStatement(node.getLineno()));
-                scope.addChild(node);
-                parentLoop.setBody(scope);
-            } else if (parent instanceof WithStatement) {
-                Scope scope = new Scope();
-                scope.addChild(buildInstrumentationStatement(node.getLineno()));
-                scope.addChild(node);
-                ((WithStatement)parent).setStatement(scope);
-            } else if (parent instanceof SwitchCase) {
-                //Don't do anything here. Direct modification of statements will result in concurrent modification exception.
-            } else if (parent instanceof LabeledStatement) {
-                //Don't do anything here.
-            } else {
-                if (parent != null) {
-                    parent.addChildBefore(buildInstrumentationStatement(node.getLineno()), node);
-                }
-            }
-        } else if (node instanceof SwitchStatement || node instanceof WithStatement) {
-            parent.addChildBefore(buildInstrumentationStatement(node.getLineno()), node);
-        } else if (node instanceof SwitchCase) {
-        	// Modified by Jie Lu on 4/14/2013. Collect coverage data for case statement and default statement too. 
-            List<AstNode> statements = ((SwitchCase) node).getStatements();
-            if (statements == null) {
-            	statements = new ArrayList<AstNode>();
-            	statements.add(0, buildInstrumentationStatement(node.getLineno()));
-            	((SwitchCase) node).setStatements(statements);
-                return true;
-            }
-            for (int i = statements.size() - 1; i >= 0; i--) {
-                AstNode statement = statements.get(i);
-                statements.add(i, buildInstrumentationStatement(statement.getLineno()));
-            }
-         // Modified by Jie Lu on 4/14/2013. Collect coverage data for case statement and default statement too. 
-            statements.add(0, buildInstrumentationStatement(node.getLineno()));
-        } else if (node instanceof FunctionNode || node instanceof TryStatement || isDebugStatement(node)) {
-            if (!(parent instanceof InfixExpression) && !(parent instanceof VariableInitializer)
-                    && !(parent instanceof ConditionalExpression) && !(parent instanceof ArrayLiteral)
-                    && !(parent instanceof ParenthesizedExpression)) {
-                parent.addChildBefore(buildInstrumentationStatement(node.getLineno()), node);
-            }
-        } else if (node instanceof ReturnStatement) {
-            ExpressionStatement newChild = buildInstrumentationStatement(node.getLineno());
-            if (parent instanceof Block) {
-                parent.addChildBefore(newChild, node);
-            } else if (parent instanceof IfStatement) {
-                IfStatement parentIf = (IfStatement) parent;
-                Scope scope = new Scope();
-                scope.addChild(newChild);
-                scope.addChild(node);
-                if (parentIf.getThenPart() == node) {
-                    parentIf.setThenPart(scope);
-                } else if (parentIf.getElsePart() == node) {
-                    parentIf.setElsePart(scope);
-                }
-            } else {
-                parent.addChildBefore(newChild, node);
-            }
-        } else if (node instanceof VariableDeclaration || node instanceof LetNode) {
-            if (!(parent instanceof LetNode)) {// TODO this is a bit specific
-                parent.addChildBefore(buildInstrumentationStatement(node.getLineno()), node);
-            }
-        } else if (node instanceof Loop) {
-            parent.addChildBefore(buildInstrumentationStatement(node.getLineno()), node);
-        } else if (node instanceof LabeledStatement) {
-            LabeledStatement labeledStatement = (LabeledStatement)node;
-            ExpressionStatement newChild = buildInstrumentationStatement(labeledStatement.getLineno());
-            parent.addChildBefore(newChild, node);
-        } else if (node instanceof IfStatement) {
-            ExpressionStatement newChild = buildInstrumentationStatement(node.getLineno());
-            if (parent instanceof IfStatement) {
-                IfStatement parentIf = (IfStatement) parent;
-                Scope scope = new Scope();
-                scope.addChild(newChild);
-                scope.addChild(node);
-                if (parentIf.getElsePart() == node) {
-                    parentIf.setElsePart(scope);
-                }
-            } else if (parent instanceof Loop) {
-                Loop parentLoop = (Loop) parent;
-                Scope scope = new Scope();
-                scope.addChild(newChild);
-                scope.addChild(node);
-                parentLoop.setBody(scope);
-            } else {
-                parent.addChildBefore(newChild, node);
-            }
-        }else if(node instanceof CatchClause){
-        	// Modified by Jie Lu on 4/14/2013, collect coverage data for catch clause too. 
-        	Block block = ((CatchClause)node).getBody();
-        	block.addChildrenToFront(buildInstrumentationStatement(node.getLineno()));
-        	((CatchClause)node).setBody(block);
-        	 
-        }
-        return true;
-    }
+		if (node.getParent() != null
+				&& node.getLineno() == node.getParent().getLineno()) {
+			// Don't add instrumentation if it will be added by parent for the
+			// same line
+			// TODO Need logic to determine if instrumentation will be added to
+			// parent.
+			// return true;
+		}
 
-    private boolean isDebugStatement(AstNode node) {
-        if (!(node instanceof KeywordLiteral))
-            return false;
-        KeywordLiteral keywordLiteral = (KeywordLiteral) node;
-        return keywordLiteral.getType() == Token.DEBUGGER;
-    }
+		AstNode parent = node.getParent();
+		if (parent instanceof ObjectProperty || parent instanceof FunctionCall) {
+			return true;
+		}
+		if (node instanceof ExpressionStatement
+				|| node instanceof EmptyExpression || node instanceof Loop
+				|| node instanceof ContinueStatement
+				|| node instanceof VariableDeclaration
+				|| node instanceof SwitchStatement
+				|| node instanceof BreakStatement
+				|| node instanceof EmptyStatement
+				|| node instanceof ThrowStatement) {
+			
+			if (node.getLineno() < 1) {
+				// Must be a case expression
+				return true;
+			}
+			if (node instanceof SwitchStatement) {
+				// Modified by Jie Lu on 4/16/2013. Collect switch and case
+				// information
+				switchMap.put(node.getLineno(), switchIndex++);
+				List<SwitchCase> caseList = ((SwitchStatement) node).getCases();
+				for (int i = 0; i < caseList.size(); i++) {
+					switchCaseMap.put(caseList.get(i).getLineno(), i + 1);
+				}
+				
+				// Add an instrumentation statement "var matchedBefore = false;" before switch statement
+				if (parent != null) {
+					parent.addChildBefore(
+							statementBuilder.buildBooleanVarDeclaration("matchedBefore", false),
+							node);
+				}
+				//modify end
+			}
+			if (parent instanceof IfStatement) {
+				IfStatement parentIf = (IfStatement) parent;
+				Scope scope = new Scope();
+				scope.addChild(buildInstrumentationStatement(node.getLineno()));
+				scope.addChild(node);
+				if (parentIf.getThenPart() == node) {
+					parentIf.setThenPart(scope);
+				} else if (parentIf.getElsePart() == node) {
+					parentIf.setElsePart(scope);
+				}
+			} else if (parent instanceof Loop) {
+				Loop parentLoop = (Loop) parent;
+				Scope scope = new Scope();
+				scope.addChild(buildInstrumentationStatement(node.getLineno()));
+				scope.addChild(node);
+				parentLoop.setBody(scope);
+			} else if (parent instanceof WithStatement) {
+				Scope scope = new Scope();
+				scope.addChild(buildInstrumentationStatement(node.getLineno()));
+				scope.addChild(node);
+				((WithStatement) parent).setStatement(scope);
+			} else if (parent instanceof SwitchCase) {
+				// Don't do anything here. Direct modification of statements
+				// will result in concurrent modification exception.
+			} else if (parent instanceof LabeledStatement) {
+				// Don't do anything here.
+			} else {
+				if (parent != null) {
+					parent.addChildBefore(
+							buildInstrumentationStatement(node.getLineno()),
+							node);
+				}
+			}
+		} else if (node instanceof SwitchStatement
+				|| node instanceof WithStatement) {
+			parent.addChildBefore(
+					buildInstrumentationStatement(node.getLineno()), node);
+		} else if (node instanceof SwitchCase) {
+			// Modified by Jie Lu on 4/14/2013. Collect coverage data for case
+			// statement and default statement too.
+			int switchIndex = switchMap.get(node.getParent().getLineno());
+			int caseIndex = switchCaseMap.get(node.getLineno());
+			
+			List<AstNode> statements = ((SwitchCase) node).getStatements();
+			if (statements == null) {
+				statements = new ArrayList<AstNode>();
+				statements.add(buildInstrumentationStatement(node.getLineno()));
+				statements.add(statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseIndex));
+		        statements.add(statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
+				((SwitchCase) node).setStatements(statements);
+				return true;
+			}
+			for (int i = statements.size() - 1; i >= 0; i--) {
+				AstNode statement = statements.get(i);
+				statements.add(i,
+						buildInstrumentationStatement(statement.getLineno()));
+			}
+			// Modified by Jie Lu on 4/14/2013. Collect coverage data for case
+			// statement and default statement too.
+			// Add case condition evaluation 
+			statements.add(0, statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
+			statements.add(0, statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseIndex));
+			statements.add(0, buildInstrumentationStatement(node.getLineno()));
+			
+			
+		} else if (node instanceof FunctionNode || node instanceof TryStatement
+				|| isDebugStatement(node)) {
+			if (!(parent instanceof InfixExpression)
+					&& !(parent instanceof VariableInitializer)
+					&& !(parent instanceof ConditionalExpression)
+					&& !(parent instanceof ArrayLiteral)
+					&& !(parent instanceof ParenthesizedExpression)) {
+				parent.addChildBefore(
+						buildInstrumentationStatement(node.getLineno()), node);
+			}
+		} else if (node instanceof ReturnStatement) {
+			ExpressionStatement newChild = buildInstrumentationStatement(node
+					.getLineno());
+			if (parent instanceof Block) {
+				parent.addChildBefore(newChild, node);
+			} else if (parent instanceof IfStatement) {
+				IfStatement parentIf = (IfStatement) parent;
+				Scope scope = new Scope();
+				scope.addChild(newChild);
+				scope.addChild(node);
+				if (parentIf.getThenPart() == node) {
+					parentIf.setThenPart(scope);
+				} else if (parentIf.getElsePart() == node) {
+					parentIf.setElsePart(scope);
+				}
+			} else {
+				parent.addChildBefore(newChild, node);
+			}
+		} else if (node instanceof VariableDeclaration
+				|| node instanceof LetNode) {
+			if (!(parent instanceof LetNode)) {// TODO this is a bit specific
+				parent.addChildBefore(
+						buildInstrumentationStatement(node.getLineno()), node);
+			}
+		} else if (node instanceof Loop) {
+			parent.addChildBefore(
+					buildInstrumentationStatement(node.getLineno()), node);
+		} else if (node instanceof LabeledStatement) {
+			LabeledStatement labeledStatement = (LabeledStatement) node;
+			ExpressionStatement newChild = buildInstrumentationStatement(labeledStatement
+					.getLineno());
+			parent.addChildBefore(newChild, node);
+		} else if (node instanceof IfStatement) {
+			ExpressionStatement newChild = buildInstrumentationStatement(node
+					.getLineno());
+			if (parent instanceof IfStatement) {
+				IfStatement parentIf = (IfStatement) parent;
+				Scope scope = new Scope();
+				scope.addChild(newChild);
+				scope.addChild(node);
+				if (parentIf.getElsePart() == node) {
+					parentIf.setElsePart(scope);
+				}
+			} else if (parent instanceof Loop) {
+				Loop parentLoop = (Loop) parent;
+				Scope scope = new Scope();
+				scope.addChild(newChild);
+				scope.addChild(node);
+				parentLoop.setBody(scope);
+			} else {
+				parent.addChildBefore(newChild, node);
+			}
+		} else if (node instanceof CatchClause) {
+			// Modified by Jie Lu on 4/14/2013, collect coverage data for catch
+			// clause too.
+			Block block = ((CatchClause) node).getBody();
+			block.addChildrenToFront(buildInstrumentationStatement(node
+					.getLineno()));
+			((CatchClause) node).setBody(block);
 
-    public SortedSet<Integer> getValidLines() {
-        return validLines;
-    }
+		}
+		return true;
+	}
+
+	private boolean isDebugStatement(AstNode node) {
+		if (!(node instanceof KeywordLiteral))
+			return false;
+		KeywordLiteral keywordLiteral = (KeywordLiteral) node;
+		return keywordLiteral.getType() == Token.DEBUGGER;
+	}
+
+	public SortedSet<Integer> getValidLines() {
+		return validLines;
+	}
+
+	public StatementBuilder getStatementBuilder() {
+		return statementBuilder;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public HashMap<Integer, Integer> getSwitchMap() {
+		return switchMap;
+	}
+
+	public HashMap<Integer, Integer> getSwitchCaseMap() {
+		return switchCaseMap;
+	}
+
 }

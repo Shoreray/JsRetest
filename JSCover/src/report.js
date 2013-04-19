@@ -1,3 +1,6 @@
+var debug = true;
+
+
 // Report coverage for each test case
 if (! window.jscoverage_report) {
   window.jscoverage_report = function jscoverage_report(dir) {
@@ -28,9 +31,26 @@ if (! window.jscoverage_report) {
         array.push(value);
       }
 
-      json.push(jscoverage_quote(file) + ':{"lineData":[' + array.join(',') + '],"branchData":' + convertBranchDataLinesToJSON(_$jscoverage[file].branchData) + '}');
+      var jsonStr = jscoverage_quote(file)
+                  + ':{"lineData":['
+                  + array.join(',')
+                  + '],"branchData":'
+                  + convertBranchDataLinesToJSON(_$jscoverage[file].branchData) 
+                  + ', "switchData":'
+                  + convertSwitchDataToJSON(_$jscoverage[file].switchData)
+                  + '}';
+
+      json.push(jsonStr);
     }
     json = '{' + json.join(',') + '}';
+
+    if(debug){
+      // Output debug information (coverage data for each test)
+      console.log("============================== " + dir + " ====================================");
+      console.log(json);
+      console.log("===============================================================================");
+      console.log("");
+    }
 
     var request = createRequest();
     var url = '/jscoverage-store';
@@ -100,9 +120,34 @@ function clearCoverage(){
         if(branchValue != undefined && branchValue != null){
           _$jscoverage[file].branchData[line][1].evalFalse = 0;
           _$jscoverage[file].branchData[line][1].evalTrue = 0;
+        }     
+      }
+
+      // Reset switch coverage
+      var switchCoverage = _$jscoverage[file].switchData;
+      for(var line =0; line < switchCoverage.length; line++){
+        var perSwitchData = switchCoverage[line];
+        for(var i=1; i<perSwitchData.length; i++){
+          var value = perSwitchData[i];
+          if(value != undefined && value != null){
+            _$jscoverage[file].switchData[line][i] = 0;
+          }
         }
-        
       }
   }
 
+}
+
+// Convert switch coverage data([][]) to json string
+function convertSwitchDataToJSON(switchData){
+  if(switchData === undefined)
+    return '[]';
+
+  var json = [];
+  for(var i=0; i<switchData.length; i++){
+    var line = '[' + switchData[i].join(',') + ']';
+    json.push(line);
+  }
+
+  return '[' + json.join(',') + ']';
 }

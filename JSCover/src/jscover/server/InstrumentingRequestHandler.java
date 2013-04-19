@@ -396,6 +396,7 @@ public class InstrumentingRequestHandler extends HttpServer {
     	JSONDataMerger merger = new JSONDataMerger();
     	SortedMap<String, FileData> newCoverage = merger.jsonToMap(data);
         for (String scriptName : newCoverage.keySet()) {
+        	// Update line coverage
         	HashMap<Integer, ArrayList<String>> coveredLines;
         	if(!CoverageData.linesCoverage.containsKey(scriptName)){
         		coveredLines =  new HashMap<Integer, ArrayList<String>>();
@@ -416,6 +417,36 @@ public class InstrumentingRequestHandler extends HttpServer {
               }
         	  CoverageData.linesCoverage.put(scriptName, coveredLines);
         	  
+        	  // Update switch coverage
+        	  HashMap<String, ArrayList<String>> coveredSwitchCases;
+        	  if(!CoverageData.switchCoverage.containsKey(scriptName)){
+        		  coveredSwitchCases = new HashMap<String, ArrayList<String>>();
+        	  }else{
+        		  coveredSwitchCases = CoverageData.switchCoverage.get(scriptName);
+        	  }
+        	  for(int i=0; i<coverageData.getSwitchData().size(); i++){
+        		  List<Integer> casesList = coverageData.getSwitchData().get(i);
+        		  // casesList[0] -> switch index
+        		  // casesList[1..] -> covered times for the case, index is case index
+        		  int switchIndex = casesList.get(0);
+        		  for(int j=1; j<casesList.size(); j++){
+        			  if(casesList.get(j) > 0){
+        				  // The j-th case is covered
+        				  String caseLabel = switchIndex + "," + j;
+        				  if(coveredSwitchCases.containsKey(caseLabel)){
+        					  if(!coveredSwitchCases.get(caseLabel).contains(testcaseName))
+        						  coveredSwitchCases.get(caseLabel).add(testcaseName);  
+        				  }else{
+        					  ArrayList<String> ts = new ArrayList<String>();
+        					  ts.add(testcaseName);
+        					  coveredSwitchCases.put(caseLabel, ts);
+        				  }
+        			  }
+        		  }
+        	  }
+        	  CoverageData.switchCoverage.put(scriptName, coveredSwitchCases);
+        	  
+        	  // Update branch coverage
         	  HashMap<String, ArrayList<String>> coveredBranches;
         	  if(!CoverageData.branchesCoverage.containsKey(scriptName)){
         		  coveredBranches = new HashMap<String, ArrayList<String>>();
@@ -471,22 +502,36 @@ public class InstrumentingRequestHandler extends HttpServer {
         	if(uri.length() > JSCOVERAGE_STORE.length() && uri.endsWith("storeAll")){
         		// save all coverage matrix to file and return
         		try{
-        			FileOutputStream fileOut = new FileOutputStream(reportDir.getAbsolutePath() + File.separator + "wholeLineCoverage.ser");
+        			// Serialize line coverage data
+        			FileOutputStream fileOut = new FileOutputStream(reportDir.getAbsolutePath() + File.separator + "wholeLineCoverage.dat");
         			ObjectOutputStream out = new ObjectOutputStream(fileOut);
         			out.writeObject(CoverageData.linesCoverage);
         			out.close();
         			fileOut.close();
         			
-        			fileOut = new FileOutputStream(reportDir.getAbsolutePath() + File.separator + "wholeBranchCoverage.ser");
+        			// Serialize branch coverage data
+        			fileOut = new FileOutputStream(reportDir.getAbsolutePath() + File.separator + "wholeBranchCoverage.dat");
         			out = new ObjectOutputStream(fileOut);
         			out.writeObject(CoverageData.branchesCoverage);
         			out.close();
         			fileOut.close();
+        			
+        			// Serialize switch coverage data
+        			fileOut = new FileOutputStream(reportDir.getAbsolutePath() + File.separator + "wholeSwitchCoverage.dat");
+        			out = new ObjectOutputStream(fileOut);
+        			out.writeObject(CoverageData.switchCoverage);
+        			out.close();
+        			fileOut.close();
+        			
         			sendResponse(HTTP_STATUS.HTTP_OK, MIME.TEXT_PLAIN, "Coverage data stored at " + reportDir);
         		}catch(Exception e){
         			e.printStackTrace();
         			sendResponse(HTTP_STATUS.HTTP_OK, MIME.TEXT_PLAIN, e.toString());
         			return;
+        		}finally{
+        			CoverageData.linesCoverage.clear();
+        			CoverageData.branchesCoverage.clear();
+        			CoverageData.switchCoverage.clear();
         		}
         		return;
         	}
@@ -498,29 +543,31 @@ public class InstrumentingRequestHandler extends HttpServer {
             	// Compute coverage for whole coverage matrix first
             	this.computeCoverage(data, testcaseName);
             	
-            	// Add coverage end
-                List<ScriptLinesAndSource> unloadJSData = null;
-                if (configuration.isIncludeUnloadedJS()) {
-                    unloadJSData = unloadedSourceProcessor.getEmptyCoverageData(uris.keySet());
-                    for (ScriptLinesAndSource scriptLinesAndSource : unloadJSData) {
-                        File src = new File(configuration.getDocumentRoot(), scriptLinesAndSource.getUri());
-                        ioUtils.copy(src, new File(reportDir, Main.reportSrcSubDir + scriptLinesAndSource.getUri()));
-                    }
-                }
-                jsonDataSaver.saveJSONData(reportDir, data, unloadJSData);
-                if (configuration.isProxy()) {
-                    for (String jsURI : uris.keySet()) {
-                        File dest = new File(reportDir, Main.reportSrcSubDir + "/" + jsURI);
-                        ioUtils.copy(uris.get(jsURI), dest);
-                    }
-                } else {
-                    for (String jsURI : uris.keySet()) {
-                        File src = new File(configuration.getDocumentRoot(), jsURI);
-                        File dest = new File(reportDir, Main.reportSrcSubDir + "/" + jsURI);
-                        ioUtils.copy(src, dest);
-                    }
-                }
-                ioService.generateJSCoverFilesForWebServer(reportDir, configuration.getVersion());
+            	// Modified by Jie Lu on 4/16/2013. We don't need to save the coverage data for each test to disk for regression test
+            	// Instead, we only need to keep the whole coverage matrix, and dump the matrix to disk when all tests are finished.
+//            	// Add coverage end
+//                List<ScriptLinesAndSource> unloadJSData = null;
+//                if (configuration.isIncludeUnloadedJS()) {
+//                    unloadJSData = unloadedSourceProcessor.getEmptyCoverageData(uris.keySet());
+//                    for (ScriptLinesAndSource scriptLinesAndSource : unloadJSData) {
+//                        File src = new File(configuration.getDocumentRoot(), scriptLinesAndSource.getUri());
+//                        ioUtils.copy(src, new File(reportDir, Main.reportSrcSubDir + scriptLinesAndSource.getUri()));
+//                    }
+//                }
+//                jsonDataSaver.saveJSONData(reportDir, data, unloadJSData);
+//                if (configuration.isProxy()) {
+//                    for (String jsURI : uris.keySet()) {
+//                        File dest = new File(reportDir, Main.reportSrcSubDir + "/" + jsURI);
+//                        ioUtils.copy(uris.get(jsURI), dest);
+//                    }
+//                } else {
+//                    for (String jsURI : uris.keySet()) {
+//                        File src = new File(configuration.getDocumentRoot(), jsURI);
+//                        File dest = new File(reportDir, Main.reportSrcSubDir + "/" + jsURI);
+//                        ioUtils.copy(src, dest);
+//                    }
+//                }
+//                ioService.generateJSCoverFilesForWebServer(reportDir, configuration.getVersion());
                 sendResponse(HTTP_STATUS.HTTP_OK, MIME.TEXT_PLAIN, "Coverage data stored at " + reportDir);
             } catch(Throwable t) {
                 logger.log("Error saving coverage data", t);
