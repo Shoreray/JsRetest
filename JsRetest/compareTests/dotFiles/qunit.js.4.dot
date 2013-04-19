@@ -1,0 +1,11 @@
+digraph {
+"0" [label="[37]: extend(this, settings);\n"] 
+"1" [label="[39]: this.testNumber = ++Test.count;\n"] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"4" [label="[38]: this.assertions = [];\n"] 
+"0" -> "4" [label="" color="green"] 
+"1" -> "2" [label="" color="green"] 
+"3" -> "0" [label="" color="green"] 
+"4" -> "1" [label="" color="green"] 
+}

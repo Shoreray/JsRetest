@@ -1,0 +1,12 @@
+digraph {
+"0" [label="[1271]: process(last);\n"] 
+"1" [label="[1270]: if (config.autorun && !config.blocking) "] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"4" [label="[1268]: config.queue.push(callback);\n"] 
+"0" -> "2" [label="" color="green"] 
+"1" -> "0" [label="true" color="green"] 
+"1" -> "2" [label="false" color="green"] 
+"3" -> "4" [label="" color="green"] 
+"4" -> "1" [label="" color="green"] 
+}

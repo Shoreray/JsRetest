@@ -1,0 +1,18 @@
+digraph {
+"0" [label="[1737]: ret += \" \" + name;\n"] 
+"1" [label="[1739]: ret += \"( \";\n"] 
+"2" [label="[1741]: ret = [ret, QUnit.jsDump.parse(fn, \"functionArgs\"), \"){\"].join(\"\");\n"] 
+"3" [label="[-1]: exit"] 
+"4" [label="[1742]: return join(ret, QUnit.jsDump.parse(fn, \"functionCode\"), \"}\");\n"] 
+"5" [label="[0]: entry"] 
+"6" [label="[1732]: var ret = \"function\", name = \"name\" in fn ? fn.name : (reName.exec(fn) || [])[1];\n"] 
+"7" [label="[1736]: if (name) "] 
+"0" -> "1" [label="" color="green"] 
+"1" -> "2" [label="" color="green"] 
+"2" -> "4" [label="" color="green"] 
+"4" -> "3" [label="" color="green"] 
+"5" -> "6" [label="" color="green"] 
+"6" -> "7" [label="" color="green"] 
+"7" -> "0" [label="true" color="green"] 
+"7" -> "1" [label="false" color="green"] 
+}

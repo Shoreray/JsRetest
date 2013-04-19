@@ -1,0 +1,17 @@
+digraph {
+"0" [label="[1610]: function quote(str) \n"] 
+"1" [label="[-1]: exit"] 
+"2" [label="[1638]: var reName = /^function (\w+)/, jsDump = {parse: function(obj, type, stack) , typeOf: function(obj) , separator: function() , indent: function(extra) , up: function(a) , down: function(a) , setParser: function(name, parser) , quote: quote, literal: literal, join: join, _depth_: 1, parsers: {window: \"[Window]\", document: \"[Document]\", error: function(error) , unknown: \"[Unknown]\", \"null\": \"null\", \"undefined\": \"undefined\", \"function\": function(fn) , array: array, nodelist: array, \"arguments\": array, object: function(map, stack) , node: function(node) , functionArgs: function(fn) , key: quote, functionCode: \"[code]\", attribute: quote, string: quote, date: quote, regexp: literal, number: literal, \"boolean\": literal}, DOMAttrs: {id: \"id\", name: \"name\", \"class\": \"className\"}, HTML: false, indentChar: \"  \", multiline: true};\n"] 
+"3" [label="[1616]: function join(pre, arr, post) \n"] 
+"4" [label="[0]: entry"] 
+"5" [label="[1628]: function array(arr, stack) \n"] 
+"6" [label="[1820]: return jsDump;\n"] 
+"7" [label="[1613]: function literal(o) \n"] 
+"0" -> "7" [label="" color="green"] 
+"2" -> "6" [label="" color="green"] 
+"3" -> "5" [label="" color="green"] 
+"4" -> "0" [label="" color="green"] 
+"5" -> "2" [label="" color="green"] 
+"6" -> "1" [label="" color="green"] 
+"7" -> "3" [label="" color="green"] 
+}

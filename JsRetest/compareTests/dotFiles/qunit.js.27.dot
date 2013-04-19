@@ -1,0 +1,13 @@
+digraph {
+"0" [label="[574]: QUnit.constructor = F;\n"] 
+"1" [label="[572]: QUnit = new F();\n"] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"4" [label="[571]: F.prototype = QUnit;\n"] 
+"5" [label="[570]: function F() \n"] 
+"0" -> "2" [label="" color="green"] 
+"1" -> "0" [label="" color="green"] 
+"3" -> "5" [label="" color="green"] 
+"4" -> "1" [label="" color="green"] 
+"5" -> "4" [label="" color="green"] 
+}

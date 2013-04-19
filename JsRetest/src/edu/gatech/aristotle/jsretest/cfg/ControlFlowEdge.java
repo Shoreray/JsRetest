@@ -50,4 +50,15 @@ public class ControlFlowEdge<T>{
 		return source.hashCode()+destination.hashCode()+label.hashCode();
 	}
 	
+	//Debug info
+	private String color;
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+	
 }

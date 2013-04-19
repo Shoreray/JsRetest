@@ -153,6 +153,7 @@ public class ControlFlowGraph<T>{
 	
 	public void addEdge(T sourceNode,T destNode){
 		addEdge(sourceNode,destNode,"");
+		
 	}
 	
 	
@@ -218,7 +219,12 @@ public class ControlFlowGraph<T>{
 				buffer.append(orderedList.indexOf(e.getDestination()));
 				buffer.append("\" [label=\"");
 				buffer.append(e.getLabel().replaceAll("\n", Matcher.quoteReplacement("\\n")).replaceAll("\"", Matcher.quoteReplacement("\\\"")));
+				if(e.getColor()!=null){
+					buffer.append("\" color=\"");
+					buffer.append(e.getColor());
+				}
 				buffer.append("\"] \n");
+				
 				
 			}
 		}
@@ -230,6 +236,9 @@ public class ControlFlowGraph<T>{
 		
 	}
 	
+	public void setEdgeColor(ControlFlowEdge<T> e,String color){
+		_getEdge(e.getSource(),e.getLabel()).setColor(color);
+	}
 	
 	
 	private ArrayList<ControlFlowEdge<T> > _getOutgoingEdges(T node){

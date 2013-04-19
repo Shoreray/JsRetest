@@ -1,0 +1,14 @@
+digraph {
+"0" [label="[1253]: if (!s) "] 
+"1" [label="[-1]: exit"] 
+"2" [label="[1256]: s = s + \"\";\n"] 
+"3" [label="[0]: entry"] 
+"4" [label="[1257]: return s.replace(/[\&<>]/g, function(s) );\n"] 
+"5" [label="[1254]: return \"\";\n"] 
+"0" -> "5" [label="true" color="green"] 
+"0" -> "2" [label="false" color="green"] 
+"2" -> "4" [label="" color="green"] 
+"3" -> "0" [label="" color="green"] 
+"4" -> "1" [label="" color="green"] 
+"5" -> "1" [label="" color="green"] 
+}

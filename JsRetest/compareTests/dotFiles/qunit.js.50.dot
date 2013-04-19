@@ -1,0 +1,17 @@
+digraph {
+"0" [label="[1365]: fn();\n"] 
+"1" [label="[1363]: elem.attachEvent(\"on\" + type, fn);\n"] 
+"2" [label="[-1]: exit"] 
+"3" [label="[0]: entry"] 
+"4" [label="[1362]: if (elem.attachEvent) "] 
+"5" [label="[1360]: if (elem.addEventListener) "] 
+"6" [label="[1361]: elem.addEventListener(type, fn, false);\n"] 
+"0" -> "2" [label="" color="green"] 
+"1" -> "2" [label="" color="green"] 
+"3" -> "5" [label="" color="green"] 
+"4" -> "1" [label="true" color="green"] 
+"4" -> "0" [label="false" color="green"] 
+"5" -> "6" [label="true" color="green"] 
+"5" -> "4" [label="false" color="green"] 
+"6" -> "2" [label="" color="green"] 
+}

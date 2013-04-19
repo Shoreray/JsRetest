@@ -1,0 +1,16 @@
+digraph {
+"0" [label="[398]: if (config.testTimeout && defined.setTimeout) "] 
+"1" [label="[-1]: exit"] 
+"2" [label="[400]: config.timeout = window.setTimeout(function() , config.testTimeout);\n"] 
+"3" [label="[0]: entry"] 
+"4" [label="[395]: config.semaphore += count || 1;\n"] 
+"5" [label="[399]: clearTimeout(config.timeout);\n"] 
+"6" [label="[396]: config.blocking = true;\n"] 
+"0" -> "5" [label="true" color="green"] 
+"0" -> "1" [label="false" color="green"] 
+"2" -> "1" [label="" color="green"] 
+"3" -> "4" [label="" color="green"] 
+"4" -> "6" [label="" color="green"] 
+"5" -> "2" [label="" color="green"] 
+"6" -> "0" [label="" color="green"] 
+}

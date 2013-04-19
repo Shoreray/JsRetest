@@ -27,8 +27,8 @@ public class CFGBuilder {
 		Parser parser=new Parser();
 		sourceDescription=sourceURI;
 		astTree=parser.parse(source, sourceURI, 1);
-		System.out.println("Ast tree of "+sourceURI);
-		System.out.println(astTree.debugPrint());
+		//System.out.println("Ast tree of "+sourceURI);
+		//System.out.println(astTree.debugPrint());
 		build();
 	}
 	

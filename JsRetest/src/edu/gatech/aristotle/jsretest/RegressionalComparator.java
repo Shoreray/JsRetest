@@ -70,7 +70,8 @@ public class RegressionalComparator {
 			String label=e.getLabel();
 			JsSourceNode oriNode=e.getDestination();
 			JsSourceNode modNode=modOuts.get(label);
-			if(oriNode.toString().equals(modNode.toString())){
+			if(oriNode.toString().equals(modNode==null?"":modNode.toString())){
+				origin.setEdgeColor(e, "green");
 				ArrayList<String> oriContainedFunctions=oriNode.getFunctionIdentifiers();
 				if(oriContainedFunctions!=null && oriContainedFunctions.size()>0){
 					ArrayList<String> modContainedFunctions=modNode.getFunctionIdentifiers();
@@ -86,19 +87,21 @@ public class RegressionalComparator {
 				}
 				compareCFG(origin,oriNode,modified,modNode);
 			}else{
+				origin.setEdgeColor(e, "red");
 				dangerousEdges.add(e);
 				
 				if(pOriNode.getAstNode().getType()!=Token.SWITCH){
 					dangerousEdgeIdentifiers.add(new Edge(this.origin.getSourceURI(),e.getSource().getLineno(),e.getDestination().getLineno(),e.getLabel()));
 					
 				}else{
+					
 					//TODO: Here, verify with coverage data format to see what happens if there is no default
 					//case in the original version of program.
 					String edgeId=""+oriOuts.indexOf(e);
 					dangerousEdgeIdentifiers.add(new Edge(this.origin.getSourceURI(),e.getSource().getLineno(),e.getDestination().getLineno(),edgeId));
 					
 				}
-				return;
+				continue;
 			}
 		}
 		

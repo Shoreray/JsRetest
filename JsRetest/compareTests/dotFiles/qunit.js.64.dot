@@ -1,0 +1,9 @@
+digraph {
+"0" [label="[222]: (collapsed ? removeClass : addClass)(next, \"qunit-collapsed\");\n"] 
+"1" [label="[-1]: exit"] 
+"2" [label="[0]: entry"] 
+"3" [label="[220]: var next = b.nextSibling.nextSibling, collapsed = hasClass(next, \"qunit-collapsed\");\n"] 
+"0" -> "1" [label="" color="green"] 
+"2" -> "3" [label="" color="green"] 
+"3" -> "0" [label="" color="green"] 
+}
