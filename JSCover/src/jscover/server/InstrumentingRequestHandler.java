@@ -379,6 +379,9 @@ public class InstrumentingRequestHandler extends HttpServer {
     private ProxyService proxyService = new ProxyService();
     private UnloadedSourceProcessor unloadedSourceProcessor;
     private Logger logger = Logger.getInstance();
+    
+    private static final String TRUE_LABEL = "true";
+    private static final String FALSE_LABEL = "false";
 
     public InstrumentingRequestHandler(Socket socket, ConfigurationForServer configuration) {
         super(socket, configuration.getDocumentRoot(), configuration.getVersion());
@@ -460,24 +463,24 @@ public class InstrumentingRequestHandler extends HttpServer {
                           if (conditions.get(j) != null) {
                         	  BranchData branch = conditions.get(j);
                         	  if(branch.getEvalTrue() > 0){
-                        		  if(coveredBranches.containsKey(i+"T") ){
-                        			  if(!coveredBranches.get(i+"T").contains(testcaseName))
-                        			  coveredBranches.get(i+"T").add(testcaseName);
+                        		  if(coveredBranches.containsKey(i+TRUE_LABEL) ){
+                        			  if(!coveredBranches.get(i+TRUE_LABEL).contains(testcaseName))
+                        			  coveredBranches.get(i+TRUE_LABEL).add(testcaseName);
                         		  }else{
                         			  ArrayList<String> ts = new ArrayList<String>();
                         			  ts.add(testcaseName);
-                        			  coveredBranches.put(i+"T", ts);
+                        			  coveredBranches.put(i+TRUE_LABEL, ts);
                         		  }
                         	  }
                         	  
                         	  if(branch.getEvalFalse() > 0){
-                        		  if(coveredBranches.containsKey(i+"F")){
-                        			  if( !coveredBranches.get(i+"F").contains(testcaseName))
-                        			  coveredBranches.get(i+"F").add(testcaseName);
+                        		  if(coveredBranches.containsKey(i+FALSE_LABEL)){
+                        			  if( !coveredBranches.get(i+FALSE_LABEL).contains(testcaseName))
+                        			  coveredBranches.get(i+FALSE_LABEL).add(testcaseName);
                         		  }else{
                         			  ArrayList<String> ts = new ArrayList<String>();
                         			  ts.add(testcaseName);
-                        			  coveredBranches.put(i+"F", ts);
+                        			  coveredBranches.put(i+FALSE_LABEL, ts);
                         		  }
                         	  }
                           }

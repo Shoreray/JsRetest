@@ -1,4 +1,4 @@
-var debug = true;
+var debug = false;
 
 
 // Report coverage for each test case
