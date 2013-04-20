@@ -416,11 +416,26 @@ class NodeProcessor {
 			if (node instanceof SwitchStatement) {
 				// Modified by Jie Lu on 4/16/2013. Collect switch and case
 				// information
-				switchMap.put(node.getLineno(), switchIndex++);
+				boolean hasDefault = false;
+				switchMap.put(node.getLineno(), switchIndex);
 				List<SwitchCase> caseList = ((SwitchStatement) node).getCases();
 				for (int i = 0; i < caseList.size(); i++) {
-					switchCaseMap.put(caseList.get(i).getLineno(), i + 1);
+					SwitchCase caseStatement = caseList.get(i);
+					if(caseStatement.isDefault())
+						hasDefault = true;
+					switchCaseMap.put(caseStatement.getLineno(), i + 1);
 				}
+				if(!hasDefault){
+					// If no default case, add a fake default case to track default coverage
+					SwitchCase defaultCase = new SwitchCase();
+					defaultCase.setExpression(null);
+					ArrayList<AstNode> statements = new ArrayList<AstNode>();
+					statements.add(0, statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
+					statements.add(0, statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseList.size() + 1));
+					defaultCase.setStatements(statements);
+					((SwitchStatement) node).getCases().add(defaultCase);
+				}
+				
 				
 				// Add an instrumentation statement "var matchedBefore = false;" before switch statement
 				if (parent != null) {
@@ -428,6 +443,8 @@ class NodeProcessor {
 							statementBuilder.buildBooleanVarDeclaration("matchedBefore", false),
 							node);
 				}
+				
+				switchIndex ++;
 				//modify end
 			}
 			if (parent instanceof IfStatement) {
@@ -470,29 +487,32 @@ class NodeProcessor {
 		} else if (node instanceof SwitchCase) {
 			// Modified by Jie Lu on 4/14/2013. Collect coverage data for case
 			// statement and default statement too.
-			int switchIndex = switchMap.get(node.getParent().getLineno());
-			int caseIndex = switchCaseMap.get(node.getLineno());
-			
-			List<AstNode> statements = ((SwitchCase) node).getStatements();
-			if (statements == null) {
-				statements = new ArrayList<AstNode>();
-				statements.add(buildInstrumentationStatement(node.getLineno()));
-				statements.add(statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseIndex));
-		        statements.add(statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
-				((SwitchCase) node).setStatements(statements);
-				return true;
+			if(node.getLineno() != -1){
+				int switchIndex = switchMap.get(node.getParent().getLineno());
+				int caseIndex = switchCaseMap.get(node.getLineno());
+				
+				List<AstNode> statements = ((SwitchCase) node).getStatements();
+				if (statements == null) {
+					statements = new ArrayList<AstNode>();
+					statements.add(buildInstrumentationStatement(node.getLineno()));
+					statements.add(statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseIndex));
+			        statements.add(statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
+					((SwitchCase) node).setStatements(statements);
+					return true;
+				}
+				for (int i = statements.size() - 1; i >= 0; i--) {
+					AstNode statement = statements.get(i);
+					statements.add(i,
+							buildInstrumentationStatement(statement.getLineno()));
+				}
+				// Modified by Jie Lu on 4/14/2013. Collect coverage data for case
+				// statement and default statement too.
+				// Add case condition evaluation 
+				statements.add(0, statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
+				statements.add(0, statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseIndex));
+				statements.add(0, buildInstrumentationStatement(node.getLineno()));
+				
 			}
-			for (int i = statements.size() - 1; i >= 0; i--) {
-				AstNode statement = statements.get(i);
-				statements.add(i,
-						buildInstrumentationStatement(statement.getLineno()));
-			}
-			// Modified by Jie Lu on 4/14/2013. Collect coverage data for case
-			// statement and default statement too.
-			// Add case condition evaluation 
-			statements.add(0, statementBuilder.buildAssignmentFromBoolean("matchedBefore", true));
-			statements.add(0, statementBuilder.buildSwitchCaseEvalFunctionCall(fileName, switchIndex, caseIndex));
-			statements.add(0, buildInstrumentationStatement(node.getLineno()));
 			
 			
 		} else if (node instanceof FunctionNode || node instanceof TryStatement

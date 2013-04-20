@@ -3,6 +3,6 @@ function testCatchBlock(){
 		var x=1;
 		throw x;
 	}catch(e){
-		Console.log(e);
+		console.log(e);
 	}
 }

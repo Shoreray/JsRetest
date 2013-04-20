@@ -17,8 +17,8 @@ public class TestSelector {
 
 	@Test
 	public void test() throws Exception{
-		CFGBuilder builder=new CFGBuilder("/Users/jielu/Dropbox/JSCover-0.2.6_updated/doc/rts_test1/switchTest.js","/doc/rts_test1/switchTest.js");
-		CFGBuilder builder2=new CFGBuilder("/Users/jielu/Dropbox/JSCover-0.2.6_updated/doc/rts_test1/switchTest_modified.js","qunit_mod1.js");
+		CFGBuilder builder=new CFGBuilder("/Users/jielu/Dropbox/JSCover-0.2.6_updated/doc/rts_test1/testFinally.js","/doc/rts_test1/testFinally.js");
+		CFGBuilder builder2=new CFGBuilder("/Users/jielu/Dropbox/JSCover-0.2.6_updated/doc/rts_test1/testFinally_mod.js","qunit_mod1.js");
 		RegressionalComparator comparator=new RegressionalComparator(builder,builder2);
 	    System.out.println("============================ Dangerous Edges =====================");
 		System.out.println(comparator.getDangerousEdgeIdentifiers());

@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Refactored date examples</title>
+ 
+  <link rel="stylesheet" href="qunit/qunit.css">
+  <script src="qunit/qunit.js"></script>
+  <script src="prettydate.js"></script>
+  <script src="switchTest.js"></script>
+  <script src="testSwitch.js"></script>
+  <script src="testCaseBlock.js"></script>
+  <script src="testIf.js"></script>
+  <script src="testCatchBlock.js"></script>
+  <script src="testFinally.js"></script>
+ 
+  <script>
+
+    jscoverage_init_report();
+  test("prettydate basics", function() {
+   /* var now = "2008/01/28 22:25:00";
+    equal(prettyDate(now, "2008/01/28 22:24:30"), "just now");jscoverage_report("test1");
+    equal(prettyDate(now, "2008/01/28 22:23:30"), "1 minute ago");jscoverage_report("test2");
+    equal(prettyDate(now, "2008/01/28 21:23:30"), "1 hour ago");jscoverage_report("test3");
+    equal(prettyDate(now, "2008/01/27 22:23:30"), "Yesterday");jscoverage_report("test4");
+    equal(prettyDate(now, "2008/01/26 22:23:30"), "2 days ago");jscoverage_report("test5");
+    equal(prettyDate(now, "2007/01/26 22:23:30"), undefined);jscoverage_report("test6");
+*/
+    // Should select 1, 2, default
+    equal(testSwitch(2), undefined);jscoverage_report("switch2");
+    testSwitch(5);jscoverage_report("switchDefault");
+    testSwitch(1);jscoverage_report("switch1");
+
+    // Test testSwitch.js. "switch" and "default" test should be selected
+    equal(testSwitch("test"), undefined);jscoverage_report("switchTest_test");
+     equal(testSwitch("switch"), undefined);jscoverage_report("switchTest_switch");
+      equal(testSwitch("default"), undefined);jscoverage_report("switchTest_default");
+
+    // Test testCaseBlock.js. Only "switch" should be selected
+    equal(testCaseBlock("test"), undefined);jscoverage_report("testCaseBlock_test");
+    equal(testCaseBlock("switch"), undefined);jscoverage_report("testCaseBlock_switch");
+    equal(testCaseBlock("default"), undefined);jscoverage_report("testCaseBlock_default");
+
+    // Test testIf.js. Only "less than 0" should be selected
+    equal(testIf(10), undefined);jscoverage_report("testIf_large_than_0");
+     equal(testIf(-1), undefined);jscoverage_report("testIf_less_than_0");
+
+    // Test testCatchBlock.js. All test cases should be selected
+        equal(testCatchBlock(), undefined);jscoverage_report("testCatchBlock_1");
+            equal(testCatchBlock(), undefined);jscoverage_report("testCatchBlock_2");
+                equal(testCatchBlock(), undefined);jscoverage_report("testCatchBlock_3");
+    
+    // Test testFinally.js, exception flow should be selected
+    equal(testFinally(), undefined);jscoverage_report("testFinally_1");
+    equal(testFinally(), undefined);jscoverage_report("testFinally_2");
+
+
+  });
+
+    jscoverage_reportall();
+
+
+  
+
+
+
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>
