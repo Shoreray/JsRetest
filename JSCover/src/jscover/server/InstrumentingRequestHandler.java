@@ -380,24 +380,27 @@ public class InstrumentingRequestHandler extends HttpServer {
     private UnloadedSourceProcessor unloadedSourceProcessor;
     private Logger logger = Logger.getInstance();
     
+    private JSONDataMerger merger;
+    private SortedMap<String, FileData> initCoverage;
     private static final String TRUE_LABEL = "true";
     private static final String FALSE_LABEL = "false";
 
-    public InstrumentingRequestHandler(Socket socket, ConfigurationForServer configuration) {
-        super(socket, configuration.getDocumentRoot(), configuration.getVersion());
-        this.configuration = configuration;
-        this.unloadedSourceProcessor = new UnloadedSourceProcessor(configuration);
+    public InstrumentingRequestHandler(Socket socket, ConfigurationForServer configuration)
+    {
+    	 super(socket, configuration.getDocumentRoot(), configuration.getVersion());
+         this.configuration = configuration;
+         this.unloadedSourceProcessor = new UnloadedSourceProcessor(configuration);
+        merger = new JSONDataMerger();
+        initCoverage = null;
     }
-    
+
     /**
      * Compute the whole coverage matrix
      * @param data: coverage data for the current test case
      * @param testcaseName: current test case name
      */
-    public void computeCoverage(String data, String testcaseName){
-    	// Add the coverage for the current test case to total coverage matrix.
-    	JSONDataMerger merger = new JSONDataMerger();
-    	SortedMap<String, FileData> newCoverage = merger.jsonToMap(data);
+    public void computeCoverage(SortedMap<String, FileData> newCoverage, String testcaseName)
+    {
         for (String scriptName : newCoverage.keySet()) {
         	// Update line coverage
         	HashMap<Integer, ArrayList<String>> coveredLines;
@@ -493,6 +496,13 @@ public class InstrumentingRequestHandler extends HttpServer {
         	
         }
 
+
+    }
+
+    public void computeCoverage(String data, String testcaseName)
+    {
+    	SortedMap<String, FileData> newCoverage = merger.jsonToMap(data);
+        computeCoverage(newCoverage, testcaseName);
     }
 
     @Override
@@ -537,14 +547,28 @@ public class InstrumentingRequestHandler extends HttpServer {
         			CoverageData.switchCoverage.clear();
         		}
         		return;
-        	}
+        	} 
+        	if(uri.length() > "/jscoverage-store".length() && uri.endsWith("initialize"))
+            {
+        		try{
+        			initCoverage = merger.jsonToMap(data);
+                    sendResponse(HTTP_STATUS.HTTP_OK, MIME.TEXT_PLAIN, "Initial coverage data stored ");
+        		}catch(Exception e){
+        			e.printStackTrace();
+        			sendResponse(HTTP_STATUS.HTTP_OK, MIME.TEXT_PLAIN, e.toString());
+        		}
+                
+                return;
+            }
             if (uri.length() > JSCOVERAGE_STORE.length()) {
                 reportDir = new File(reportDir, uri.substring(JSCOVERAGE_STORE.length()));
                 testcaseName = uri.substring(JSCOVERAGE_STORE.length()).replace("/", "");
             }
             try {
             	// Compute coverage for whole coverage matrix first
-            	this.computeCoverage(data, testcaseName);
+            	 if(initCoverage != null)
+                     computeCoverage(initCoverage, testcaseName);
+                 computeCoverage(data, testcaseName);
             	
             	// Modified by Jie Lu on 4/16/2013. We don't need to save the coverage data for each test to disk for regression test
             	// Instead, we only need to keep the whole coverage matrix, and dump the matrix to disk when all tests are finished.

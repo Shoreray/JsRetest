@@ -450,7 +450,7 @@ class SourceProcessor {
     	// Append hashcode of file name to evalSwitchCase function name, so that each script will call its own eval function
     	sb.append(format("function evalSwitchCase_%s(switchIndex, caseIndex, matchedBefore) {\n", Math.abs(fileName.hashCode())));
     	sb.append(format("if(!matchedBefore && _$jscoverage['%s'].switchData[switchIndex] != undefined) {\n", fileName));
-    	sb.append(format(" if( _$jscoverage['%s'].switchData[switchIndex].length < caseIndex +1){\n", fileName));
+    	sb.append(format(" if( _$jscoverage['%s'].switchData[switchIndex][caseIndex] === undefined){\n", fileName));
     	sb.append(format(" _$jscoverage['%s'].switchData[switchIndex][caseIndex] = 1;\n", fileName));
     	sb.append("}else{\n");
     	sb.append(format("_$jscoverage['%s'].switchData[switchIndex][caseIndex]++;\n", fileName));

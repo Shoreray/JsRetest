@@ -68,17 +68,44 @@ public class CoverageData {
     		if(edgeLabel == "" || edgeLabel.equals("exception")){
     			// This is a normal edge(straight line in one basic block), need to cover both src and target
     			// Or this is a special exception edge, both source and target should be covered too
-    			ts = getCommonTests(linesCoverage.get(edge.getScriptName()).get(edge.getSourceLine()), linesCoverage.get(edge.getScriptName()).get(edge.getTargetLine()));
+    			HashMap<Integer, ArrayList<String>> coverage = linesCoverage.get(edge.getScriptName());
+    			if(coverage == null){
+    				ts = null;
+    			}else{
+    				if(edge.getSourceLine() == 0){
+        				// Entry -> first statement, only need to cover the target
+        				ts = coverage.get(edge.getTargetLine());
+        			}else if(edge.getTargetLine() == -1){
+        				// Last statement -> Exit, only need to cover the source
+        				ts = coverage.get(edge.getSourceLine());
+        			}else{
+        				// Need to cover both the source and target
+        				ts = getCommonTests(coverage.get(edge.getSourceLine()), coverage.get(edge.getTargetLine()));
+        			}
+    			}	
     		}else if(edgeLabel.endsWith(TRUE_LABEL) || edgeLabel.endsWith(FALSE_LABEL)){
     			// This is a branch edge, need to cover sourceLineT, sourceLineF
-    			ts = branchesCoverage.get(edge.getScriptName()).get(edge.getSourceLine() + edgeLabel);
+    			HashMap<String, ArrayList<String>> coverage = branchesCoverage.get(edge.getScriptName());
+    			if(coverage == null){
+    				ts = null;
+    			}else{
+    				ts = coverage.get(edge.getSourceLine() + edgeLabel);
+    			}
+    			
     		}else{
     			// This is a switch-case branch, need to cover the source and label(1,1)
-    			ts = switchCoverage.get(edge.getScriptName()).get(edge.getSourceLine() + "," + edgeLabel);
+    			HashMap<String, ArrayList<String>> coverage = switchCoverage.get(edge.getScriptName());
+    			if(coverage == null){
+    				ts = null;
+    			}else{
+    				ts = coverage.get(edge.getSourceLine() + "," + edgeLabel);
+    			}
+    			
+    			
     		}
     		
     		if(ts != null){
-    			for(int j=0; i<ts.size(); j++){
+    			for(int j=0; j<ts.size(); j++){
     				if(!coveredTests.contains(ts.get(j)))
     					coveredTests.add(ts.get(j));
     			}
@@ -90,6 +117,9 @@ public class CoverageData {
     
     // Get converged test cases, cover both source and target
     public ArrayList<String> getCommonTests(ArrayList<String> ts_src, ArrayList<String> ts_target){
+    	if(ts_src == null || ts_target == null)
+    		return null;
+    	
     	ArrayList<String> ts = new ArrayList<String>();
     	for(int i=0; i<ts_target.size(); i++){
     		String test = ts_target.get(i);
