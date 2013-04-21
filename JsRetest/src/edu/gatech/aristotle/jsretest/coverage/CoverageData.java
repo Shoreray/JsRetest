@@ -65,7 +65,7 @@ public class CoverageData {
     		ArrayList<String> ts = null;
     		
     		String edgeLabel = edge.getLabel();
-    		if(edgeLabel == "" || edgeLabel.equals("exception")){
+    		if(edgeLabel == "" || edgeLabel.equals("exception") || edgeLabel.equals("return_or_throw")){
     			// This is a normal edge(straight line in one basic block), need to cover both src and target
     			// Or this is a special exception edge, both source and target should be covered too
     			HashMap<Integer, ArrayList<String>> coverage = linesCoverage.get(edge.getScriptName());
